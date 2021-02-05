@@ -1,5 +1,5 @@
 # bullet-roasting
-Notebook for ingesting, expanding, displaying, and soon analyzing [Allio Bullet coffee roasting data](https://aillio.com/?page_id=23112).
+Notebook for ingesting, expanding, displaying, and analyzing [Allio Bullet coffee roasting data](https://aillio.com/?page_id=23112).
 
 current state targeted for personal use, interested in expanding functionality with others. Please contact to collaborate
 
