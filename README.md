@@ -1,7 +1,7 @@
 # bullet-roasting
-Data science notebook for ingesting, expanding, and displaying [Allio Bullet coffee roasting data](https://aillio.com/?page_id=23112).
+Notebook for ingesting, expanding, displaying, and soon analyzing [Allio Bullet coffee roasting data](https://aillio.com/?page_id=23112).
 
-current state of limited personal use, interested in expanding functionality. Please contact to collaborate
+current state targeted for personal use, interested in expanding functionality with others. Please contact to collaborate
 
 
 ![roasting data scatter plot](https://github.com/rockpyer/bullet-roasting/blob/main/bulletRoastingEDA.png)
