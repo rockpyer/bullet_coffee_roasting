@@ -46,7 +46,7 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
  - 1/27/23 - need to clean up scatter matrix errors:
    * /Users/ryanweller/opt/anaconda3/lib/python3.9/site-packages/pandas/plotting/_matplotlib/misc.py:100: UserWarning: Attempting to set identical left == right == 0.925 results in singular transformations; automatically expanding. ax.set_xlim(boundaries_list[j])
  - 1/27/23 - Starting to clean up this big notebook into chunks of funcationality
-
+- 1/29/23 - Updates the github after the Australia Day BBQ. moved files and completed the refresh of the 'BulletRoastingAnalysisNotebook'.  Need to simplifly some names and break apart the notebook.
 
 
 
