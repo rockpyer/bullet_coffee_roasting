@@ -1,6 +1,9 @@
 # bullet-roasting
 For ingesting, transforming, displaying, and analyzing [Allio Bullet coffee roasting data](https://aillio.com/?page_id=23112).
 
+Notebook: BulletRoastingAnalysisNotebook.ipynb
+Stand alone load file: bulletPy_load.py
+
 current state targeted for personal use, interested in expanding functionality with others. Please contact to collaborate
 
 *Note: If your RoastTime isn't installed in the default MacOS location, edit 'base_path' (lines ~18-19)*
