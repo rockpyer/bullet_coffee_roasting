@@ -14,13 +14,12 @@ def basic_cleanup(df):
     # Define list of unused data 
     other_meta = ['userId', 'isFork', 'serialNumber', 'IRSensor', 'inventory.nextGreenWeight',
                   'inventory.previousGreenWeight', 'inventory.changeInGreenWeight', 'isPrivate',
-                  'slug', 'updated_at', 'updatedAt', 'hardware',
-                  'roastDegree', 'tagids', 'recipeID','parentUserId','parentUsername','overlayID']
+                  'slug', 'updated_at', 'updatedAt', 'hardware', 'tagids', 'recipeID',
+                  'parentUserId','parentUsername','overlayID']
 
     # Drop the extra data
     df = df.loc[:, ~df.columns.isin(other_meta)]
     #df.drop(other_meta, axis=1) #not using because this or inplace=True gave errors about setting on a copy
-    
     
     # Shift column 'Name' to first position
     first_column = df.pop('roastName')

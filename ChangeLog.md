@@ -74,10 +74,20 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
       - DevelopmentTime   -  Is not development Phase Time… numbers are very high  500-650+, not quite seconds or half seconds of the phase (I’d expect more at 1.5-2 mins
           - I couldn’t get ChatGPT to do that for me:
               - For each unique Roast Name the new calculated phase needs to be: Point time for Point Phase DevTime] = [Point Time: Point Phase, totalRoastTime] - [Point Time: Point Phase, firstCrackTime]
+  - I fix the openAI API .env issue. should load correctly as long as you have OPENAI_API_KEY="YOU KEY" in your .env file
+  - Fixed occasional missed Turning point because I had a filter to only include minBT when the derivative was >0
+  - Next, 
+    -  28  firstCrackTemp         1 non-null      float64
+          -  related to dropping indexFirstCrackStart in data_cleanup?
+    -  33  peakRoR                0 non-null      float64
+    -  39  browiningPhaseTime     0 non-null      float64
+    -  43  RoR-browning-est       0 non-null      float64
+    -  14  Drop-ChargeDeltaTemp   0 non-null      float64
 
 
-- 
 
+
+ADDITIONAL NOTES:
 
 - Future: Also might need to try and look up the beanId ex: "beanId": "9e7d2b7e-1f51-4baf-bc3c-5b061d91acd8"  from roast.world
 - Maybe scrape roast.world... check out third AI scraper

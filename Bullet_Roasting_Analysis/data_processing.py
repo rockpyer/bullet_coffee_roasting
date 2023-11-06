@@ -22,7 +22,6 @@ def deconstruct_temp_curves(df):
         # Calculate second derivative ***
         ### first pass at 2nd Derivative, review and see how to improve and smooth
         curve_df['ibts2ndDerivative'] = curve_df.groupby('roastName')['ibtsDerivative'].apply(lambda x: x.diff())
-
         curve_df.fillna(value=np.nan, inplace=True)
     
         return curve_df
@@ -42,24 +41,20 @@ def develop_point_df(df, curve_df):
               'comments', 'roastNumber', 'firmware', 'missingSeconds', 'rating', 'beanId']
     point_df = pd.DataFrame(df, columns=point_list).reset_index()
     point_df.drop(columns='index', inplace=True)
-    print ('pass -5')
     point_df.indexYellowingStart = point_df.indexYellowingStart.fillna(value=np.nan)
     #point_df.indexFirstCrackStart = point_df.indexFirstCrackStart.fillna(value=np.nan)
-    print ('pass -4')
+
     # Find turning point index and index at 165 deg bean Temp
     sampleRate = 2
     roastName_df = curve_df.groupby(['roastName'])
-    print ('pass 0')
     
     for name, group in roastName_df:
         minBT = group.beanTemperature.min()
-        print ('pass 0.05')
         for i, row in group.iterrows():
-            if row.beanTemperature == minBT and row.beanDerivative >= 0:
+            if row.beanTemperature == minBT:  # previously-  and row.beanDerivative >= 0  but a small % of roasts were assigned nan
                 point_df.loc[(point_df.roastName == name), 'indexTurningPoint'] = row.indexTime
                 point_df.loc[(point_df.roastName == name), 'ibtsTurningPointTemp'] = row.drumTemperature
                 break
-        print ('pass 0.1')
         for i, row in group.iterrows():
             if row.indexTime > 120 and row.drumTemperature >= 165:
                 autoYP165 = row.indexTime
@@ -86,54 +81,50 @@ def develop_point_df(df, curve_df):
         #         point_df.loc[name_condition, 'firstCrackTemp'] = row.drumTemperature
         #         break
 
-    print ('pass 1')
+
     point_df['turningPointTime'] = (point_df.indexTurningPoint) / 60 / sampleRate
-    print ('pass 2')
-    #%%
+
+ 
     #convert WG and WR to numeric values
     point_df['weightGreen'] = pd.to_numeric(point_df['weightGreen'])
     point_df['weightRoasted'] = pd.to_numeric(point_df['weightRoasted'])
     # If weightGreen and weightRoasted are non-zero, calculate weightLostPercent, else set to np.nan
     point_df.loc[(point_df.weightGreen > 0) & (point_df.weightRoasted > 0), 'weightLostPercent'] = (point_df.weightGreen - point_df.weightRoasted) / point_df.weightGreen * 100
-    print ('pass 3')
 
-    #%%
     # Replace missing or bad YP pick with autoYP165
     point_df.loc[(point_df.indexYellowingStart < 1), 'indexYellowingStart'] = point_df.index165PT
     point_df.loc[(point_df.indexYellowingStart.isnull()), 'indexYellowingStart'] = point_df.index165PT
     point_df['yellowPointTime'] = point_df.indexYellowingStart / 60 / sampleRate
 
 
-    print ('pass 4)')
     # Create a yellowPointTemp165 column to mark the YP temp as 165 always
     point_df['yellowPointTemp165'] = 165
-    print ('pass 5')
 
     # Replace bad FC points with np.nan
     point_df.loc[(point_df.indexFirstCrackStart == 0), 'indexFirstCrackStart'] = np.nan
     point_df.loc[(point_df.indexFirstCrackStart > 10000), 'indexFirstCrackStart'] = np.nan
     point_df['firstCrackTime'] = point_df.indexFirstCrackStart / 60 / 2
-    print ('pass 6')
+   
 
     # Determine the max ROR for each roastName using an average moving window of 50 points (25 seconds)
     point_df['peakRoR'] = curve_df.groupby('roastName')['ibts2ndDerivative'].rolling(50, center=True).mean().groupby(level=1).max().reset_index(drop=True)
     window_size = 50
     roll_max = curve_df.groupby('roastName')['ibts2ndDerivative'].apply(lambda x: x.rolling(window=window_size, center=True).mean().idxmax() / 60 / sampleRate).reset_index(drop=True)
     point_df['peakRoRTime'] = roll_max
-    print ('pass 7')
+    
 
     # Time/Temp and Temp/Time calculations for the IBTS drum temp
     point_df['time/temp'] = point_df.totalRoastTime / point_df.drumDropTemperature
     point_df['temp/time'] = point_df.drumDropTemperature / point_df.totalRoastTime
-    print ('pass 8')
+   
 
     # IBTS BeanProbe difference for change over time plot
     point_df['deltaIBTS-BT-atDrop'] = point_df.drumDropTemperature - point_df.beanDropTemperature
-    print ('pass 9')
+
 
     # Calculate Yellowing Phase Duration, time from Turning point to Yellowing Point
     point_df['yellowingPhaseTime'] = point_df.yellowPointTime - point_df.turningPointTime
-    print ('pass 10')
+
 
     # Calculate Browning Phase Duration, time from Yellowing Point to First Crack Start
     # if first crack time is true, run, else if firstCrackTime is NaN or blank set browiningPhaseTime to NaN
@@ -141,7 +132,7 @@ def develop_point_df(df, curve_df):
         (point_df.firstCrackTime == '') |
         (point_df.firstCrackTime <= 0), 'browiningPhaseTime'] = np.nan
     point_df.loc[(point_df.firstCrackTime > 0), 'browningPhaseTime'] = point_df.firstCrackTime - point_df.yellowPointTime
-    print ('pass 11')
+
 
     # Calculate Development Duration, time from First Crack Start to First Crack End or Drop
     # if first crack time is true, run, else if firstCrackTime is NaN or blank set developmentTime to NaN
@@ -149,11 +140,10 @@ def develop_point_df(df, curve_df):
         (point_df.firstCrackTime == '') |
         (point_df.firstCrackTime <= 0), 'developmentTime'] = np.nan
     point_df.loc[(point_df.firstCrackTime > 0), 'developmentTime'] = point_df.totalRoastTime - point_df.firstCrackTime
-    print ('pass 12')
 
     # Calculate RoR from Turning Point to Yellowing Point (estimated from straight point to point) *** future TBD - check against the actual mean values from curve_df
     point_df['RoR-yellowing-est'] = (165 - point_df.ibtsTurningPointTemp) / point_df.yellowingPhaseTime
-    print ('pass 13')
+
 
     # Calculate RoR from in the Browing phase (Yellowing Point to First Crack Start)
     # if first crack time is true, run, else if firstCrackTime is NaN or blank set RoR-browning-est to NaN
@@ -161,7 +151,7 @@ def develop_point_df(df, curve_df):
         (point_df.firstCrackTime == '') |
         (point_df.firstCrackTime <= 0), 'RoR-browning-est'] = np.nan
     point_df.loc[(point_df.firstCrackTime > 0), 'RoR-browning-est'] = (point_df.firstCrackTemp - 165) / point_df.browningPhaseTime
-    print ('pass 14')
+
 
     # Calculate RoR from First Crack Start to First Crack End or Drop
     # if first crack time is true, run, else if firstCrackTime is NaN or blank set RoR-development-est to NaN

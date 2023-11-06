@@ -4,25 +4,25 @@ import os
 import openai
 import pandas as pd
 import json
+from dotenv import load_dotenv
 
 #openai.api_key = api_key
 #openai.api_key = os.getenv("OPENAI_API_KEY")
 #openai.api_key = os.environ['OPENAI_API_KEY'] 
-
-api_key = os.environ.get('OPENAI_API_KEY')
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
+#api_key = os.environ.get('OPENAI_API_KEY')
 if api_key:
   openai.api_key = api_key
   print(r'OPENAI_API_KEY good to go')
 else:
   print (api_key)
   print("OPENAI_API_KEY not set")
-  openai.api_key = "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"# *** fix this shit
+  openai.api_key = "** Something is not right **"
+  
   
 #load point_df.csv from csvExports folder as point_df
 #point_df = pd.read_csv('../csvExports/point_df.csv')
-#set a start timer
-import time
-start_time = time.time()
 
 def get_origin(roast_name):
     response = openai.ChatCompletion.create(
@@ -51,14 +51,10 @@ def get_origin(roast_name):
     return origin
 
 
-new_df = pd.DataFrame()
-new_df['Origin'] = point_df['roastName'].apply(get_origin)
+# new_df = pd.DataFrame()
+# new_df['Origin'] = point_df['roastName'].apply(get_origin)
 
 
-end_time = time.time()
-# Calculate the elapsed time
-elapsed_time = end_time - start_time
-print(f"Function took {elapsed_time} seconds to run.")
 
 # # Display the DataFrame with thSe 'roastName' and 'Origin' columns
 # display(point_df[['roastName', 'Origin']])
