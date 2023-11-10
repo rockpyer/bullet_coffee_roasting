@@ -1,16 +1,19 @@
 #%%
 import logging
-logging.basicConfig(filename='my_log_file.log', level=logging.DEBUG)
 import os
 import pandas as pd
 from pathlib import Path
-from roasting_data import load_roasting_data
-from data_cleanup import basic_cleanup, drop_intermediate_columns
-from data_processing import deconstruct_temp_curves, develop_point_df, check_missing_values
-#from AI import  api_key, get_origin
-from data_export import export_raw_data, export_processed_data
-from plots import plot_bar, plot_box, plot_scatter, plot_scatter_matrix
+from pathlib import Path
 from pprint import pprint
+from src.roasting_data import load_roasting_data
+from src.data_cleanup import basic_cleanup, drop_intermediate_columns
+from src.data_processing import deconstruct_temp_curves, develop_point_df, check_missing_values
+from src.data_export import export_raw_data, export_processed_data
+from src.plots import plot_bar, plot_box, plot_scatter, plot_scatter_matrix
+from src.AI import get_origin
+
+
+logging.basicConfig(filename='log_file.log', level=logging.DEBUG)
 
 # Set Max columns to 100
 pd.set_option('display.max_columns', 100)
