@@ -106,7 +106,7 @@ print ("Missing Values Check Done")
 #print(df.head())
 #print(curve_df)
 print ('Results')
-display (point_df)
+print (point_df)
 
 # Export the processed curve_df and point_df to a .csv file
 export_processed_data(curve_df, point_df)
