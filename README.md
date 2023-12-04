@@ -1,5 +1,6 @@
 # bullet-roasting
-For ingesting, transforming, displaying, and analyzing [Allio Bullet coffee roasting data](https://aillio.com/?page_id=23112). by https://www.instagram.com/f.w.bennies
+For ingesting, transforming, displaying, and analyzing [Allio Bullet coffee roasting data](https://aillio.com/?page_id=23112).
+by https://www.instagram.com/f.w.bennies <br>
 ![@f.w.bennies](images/friendshipsign.png)
 
 - Data is extracted from .json roast files and cleaned up
