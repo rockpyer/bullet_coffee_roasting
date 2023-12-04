@@ -1,6 +1,6 @@
 # bullet-roasting
 For ingesting, transforming, displaying, and analyzing [Allio Bullet coffee roasting data](https://aillio.com/?page_id=23112).
-by https://www.instagram.com/f.w.bennies <br>
+<br>by https://www.instagram.com/f.w.bennies <br>
 ![@f.w.bennies](images/friendshipsign.png)
 
 - Data is extracted from .json roast files and cleaned up
@@ -15,11 +15,6 @@ Current state targeted for personal use due to several cleanup functions that ca
 
 *Built for my bullet (hardware version) purchased in July 2020 - noteworthy because the data structure of the .json files have changed over time which requires some merges or gap fixes.*
 
-
 ![roasting data scatter plot](images/bulletRoastingEDA.png)
 
-
 ![roasting data with itbs ror](images/allRoastsPlt.png)
-
-
-

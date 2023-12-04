@@ -1,9 +1,10 @@
+/Bullet_Roasting_Analysis
 /Bullet_Roasting_Analysis/.env
-/oldFiles/
+/oldFiles
 .ipynb_checkpoints
 .env
 /src/__pycache__
 /otherFiles/WIPscripts/testingOpenAI_updates.ipynb
 log_file.log
-/data/
-/csvExports/
+/data
+/csvExports

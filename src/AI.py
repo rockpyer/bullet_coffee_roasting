@@ -35,5 +35,5 @@ def get_origin(roast_name):
   
   # .loads converts string to dict, .get returns value of key "Origin" or None if not present
   originName = json.loads(completion.choices[0].message.content).get("Origin", None) 
-  print (roast_name, originName)
+  #print (roast_name, originName)
   return (originName)
