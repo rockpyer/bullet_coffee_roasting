@@ -62,14 +62,14 @@ print ("Get Origin Done")
 end_time = time.time()
 elapsed_time = end_time - start_time
 print(f"Function took {elapsed_time} seconds to run.")
-# %%
-display (curve_df)
-# %% Personaly checking some results with plots ***
+
+# %% Personaly checking some results with plots as i fix the phases ***
 ############################################################################
 display (point_df)
-
+# %%
+display (curve_df)
 #%%
-###
+###  not working right now
 import plotly.express as px
 # make the x axis indexTime go from 0 to 150
 fig = px.line(curve_df.loc[curve_df.roastName == 'Ethiopia #4 w/ marcel', :], x='indexTime', y='beanTemperature', title='Bean Temperature over Time')
@@ -78,16 +78,16 @@ ax = fig.update_xaxes(range=[0, 150])
 fig.show()
 
 
-
 # %% ###### chcking out some data from the curve_df  ***
 # make a new df of curve_df based on just the first 10 roastNames in point_df
 new_df = curve_df.loc[curve_df.roastName.isin(point_df.roastName.head(10))]
 
-
-#group roasts by roastName and plot the first 10 beanTemperatures for the first 10 roasts in curve_df
+# group roasts by roastName and plot the first 10 beanTemperatures for the first 10 roasts in curve_df
 fig = px.line(new_df.groupby('roastName').head(10), x='indexTime', y='beanTemperature', color='roastName', 
               title='Bean Temperature over Time')
 ax = fig.update_xaxes(range=[0, 950])
+
+fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="right", x=1))
 fig.show()
 
 #print indexTime and beanTemperature for new_df, show at least 50 rows
@@ -95,22 +95,18 @@ print (new_df[['indexTime', 'beanTemperature']].head(50))
 
 ############################################################################
 #%%
+#### FINAL CLEANUP and EXPORT #####
+
 # Post-process cleanup
 point_df = drop_intermediate_columns(point_df)
 print ("Post-process cleanup Done")
 
 # Check
 check_missing_values(point_df)
-print ("Missing Values Check Done")
-
-# Review the results
-#print(df.head())
-#print(curve_df)
-print ('Results')
-print (point_df)
 
 # Export the processed curve_df and point_df to a .csv file
 export_processed_data(curve_df, point_df)
+print ("Export Processed Data Done")
 #%%
 # Simple QC Plots #
 # plot_bar(point_df)
@@ -123,19 +119,5 @@ plot_scatter(point_df)
 # 'comments', 'rating', 'beanId', 'indexTurningPoint', 'ibtsTurningPointTemp', 
 # 'turningPointTime']
 
-print ("Done")
 
-
-# %%  #### EXPORT RESULTS #####
-import pandas as pd
-from datetime import datetime
-
-timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-point_filename = f'point_data_{timestamp}.csv'
-curve_filename = f'curve_data_{timestamp}.csv'
-
-# Export the DataFrame to a CSV file with the timestamp in the file name
-point_df.to_csv(f'csvExports/{point_filename}', index=False)
-curve_df.to_csv(f'csvExports/{curve_filename}', index=False)
-
-print (f'Exported {point_filename} and {curve_filename} to csvExports folder')
+# %%
