@@ -1,6 +1,7 @@
 #%%
 import logging
 import os
+import time
 import pandas as pd
 from pathlib import Path
 from pathlib import Path
@@ -11,7 +12,6 @@ from src.data_processing import deconstruct_temp_curves, develop_point_df, check
 from src.data_export import export_raw_data, export_processed_data
 from src.plots import plot_bar, plot_box, plot_scatter, plot_scatter_matrix
 from src.AI import get_origin
-
 
 logging.basicConfig(filename='log_file.log', level=logging.DEBUG)
 
@@ -47,23 +47,29 @@ print ("Deconstruct Done")
 point_df = develop_point_df(df, curve_df)
 print ("Develop Point_DF Done")
 
-#%% 
-from AI import  api_key, get_origin
-import time
+#%% ####### Use OpenAI to get the origin from the roastName ########
 start_time = time.time()
 
-# Use OpenAI to get the origin from the roastName 
+# def get_origin_with_delay(roast_name):
+#     time.sleep(0)
+#     return get_origin(roast_name)
+#point_df['Origin'] = None # initialize the column ***  probably not needed but trying to work on the timeout issue
+# dealing with ReadTimeout: The read operation timed out
+#point_df['Origin'] = point_df['roastName'].apply(get_origin_with_delay)
 point_df['Origin'] = point_df['roastName'].apply(get_origin)
-print ("Get Origin Done")
 
+print ("Get Origin Done")
 end_time = time.time()
 elapsed_time = end_time - start_time
 print(f"Function took {elapsed_time} seconds to run.")
-
-#%% 
-#################
 # %%
-# #from the curve_df plot the Bean Temperature and indexTime for the roastName = "Ethiopia #4 w/ marcel"
+display (curve_df)
+# %% Personaly checking some results with plots ***
+############################################################################
+display (point_df)
+
+#%%
+###
 import plotly.express as px
 # make the x axis indexTime go from 0 to 150
 fig = px.line(curve_df.loc[curve_df.roastName == 'Ethiopia #4 w/ marcel', :], x='indexTime', y='beanTemperature', title='Bean Temperature over Time')
@@ -71,26 +77,21 @@ fig = px.line(curve_df.loc[curve_df.roastName == 'Ethiopia #4 w/ marcel', :], x=
 ax = fig.update_xaxes(range=[0, 150])
 fig.show()
 
-# %%
+
+
+# %% ###### chcking out some data from the curve_df  ***
 # make a new df of curve_df based on just the first 10 roastNames in point_df
 new_df = curve_df.loc[curve_df.roastName.isin(point_df.roastName.head(10))]
 
-# %%
+
 #group roasts by roastName and plot the first 10 beanTemperatures for the first 10 roasts in curve_df
 fig = px.line(new_df.groupby('roastName').head(10), x='indexTime', y='beanTemperature', color='roastName', 
               title='Bean Temperature over Time')
 ax = fig.update_xaxes(range=[0, 950])
 fig.show()
 
-#%%
 #print indexTime and beanTemperature for new_df, show at least 50 rows
 print (new_df[['indexTime', 'beanTemperature']].head(50))
-
-
-
-
-
-
 
 ############################################################################
 #%%
@@ -111,7 +112,7 @@ print (point_df)
 # Export the processed curve_df and point_df to a .csv file
 export_processed_data(curve_df, point_df)
 #%%
-# Plot as you wish #
+# Simple QC Plots #
 # plot_bar(point_df)
 # plot_box(point_df)
 plot_scatter(point_df)
@@ -125,7 +126,7 @@ plot_scatter(point_df)
 print ("Done")
 
 
-# %%
+# %%  #### EXPORT RESULTS #####
 import pandas as pd
 from datetime import datetime
 
@@ -138,5 +139,3 @@ point_df.to_csv(f'csvExports/{point_filename}', index=False)
 curve_df.to_csv(f'csvExports/{curve_filename}', index=False)
 
 print (f'Exported {point_filename} and {curve_filename} to csvExports folder')
-
-# %%
