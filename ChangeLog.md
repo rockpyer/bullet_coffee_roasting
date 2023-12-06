@@ -171,8 +171,12 @@ def get_origin(roast_name):
     -  43  RoR-browning-est       0 non-null      float64
     -  14  Drop-ChargeDeltaTemp   0 non-null      float64
 
->>>>>>> 7ee3a754c9df0956422db5c37c78e7393d08467b
+11/xx/23 
+  - Changes not captured in git branch issues
 
+12/3/23
+  - completed fixes to dev and main branches. now all runing out of Python/bullet_coffee_roasting locally
+  - 
 
 
 ADDITIONAL NOTES:
@@ -218,11 +222,10 @@ ADDITIONAL NOTES:
 
 - Plot difference between BT and ITBS at certain temps (100, 165, 180, 190, 200, 210, charge, and drop!) and batch size, look for trend over time or with batch sizes
 
-<<<<<<< HEAD
 - add additional target points like 185, maybe 180 and 190 or others?
 - Add soak/no_soak boolean
 =======
  - add additional target points like 185, maybe 180 and 190 or others?
  - Add soak/no_soak boolean
  
->>>>>>> 7ee3a754c9df0956422db5c37c78e7393d08467b
+-
