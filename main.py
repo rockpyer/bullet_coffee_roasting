@@ -3,14 +3,22 @@ import logging
 import os
 import time
 import pandas as pd
-from pathlib import Path
+from importlib import reload
 from pathlib import Path
 from pprint import pprint
 from src.roasting_data import load_roasting_data
 from src.data_cleanup import basic_cleanup, drop_intermediate_columns
+import src.data_processing #***
 from src.data_processing import deconstruct_temp_curves, develop_point_df, check_missing_values
+from src.data_processing import create_point_df, get_first_crack_temp
+
+import src.data_processing #***
+reload (src.data_processing)
+from src.data_processing import deconstruct_temp_curves, develop_point_df, check_missing_values
+from src.data_processing import create_point_df, get_first_crack_temp
+
 from src.data_export import export_raw_data, export_processed_data
-from src.plots import plot_bar, plot_box, plot_scatter, plot_scatter_matrix
+from src.plots import plot_scatter#, plot_bar, plot_box, plot_scatter_matrix
 from src.AI import get_origin
 
 logging.basicConfig(filename='log_file.log', level=logging.DEBUG)
@@ -42,9 +50,18 @@ print ("Export Raw Data Done")
 curve_df = deconstruct_temp_curves(df)
 print ("Deconstruct Done")
 
+# create point_df
+point_df = create_point_df(df)
+print ("Create Point_df Done")
+
+# get first crack temp
+point_df = get_first_crack_temp(curve_df, point_df)
+print ("Get First Crack Temp Done")
+
+
 #%%
 # Develop Point_DF
-point_df = develop_point_df(df, curve_df)
+point_df = develop_point_df(point_df, curve_df)
 print ("Develop Point_DF Done")
 
 #%% ####### Use OpenAI to get the origin from the roastName ########

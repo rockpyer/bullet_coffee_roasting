@@ -16,6 +16,7 @@ def deconstruct_temp_curves(df):
                                         pd.Series(row['ibtsDerivative'], name='ibtsDerivative', dtype='float64')]).T
             temp_curve_df['roastName'] = row['roastName']
             temp_curve_df['indexTime'] = temp_curve_df.index
+            temp_curve_df['indexFirstCrackStart'] = row['indexFirstCrackStart']
             temp_curve_df['softwareVersion'] = row['softwareVersion']
             curve_df = pd.concat([curve_df, temp_curve_df], ignore_index=True)
                         
@@ -31,8 +32,7 @@ def deconstruct_temp_curves(df):
         print("Exception:", str(e))
         traceback.print_exc()
 
-        
-def develop_point_df(df, curve_df):
+def create_point_df(df):
     # Create df of point sets (single entry per profile)
     point_list = ['roastName', 'dateTime', 'beanChargeTemperature', 'beanDropTemperature', 'drumChargeTemperature',
               'drumDropTemperature', 'preheatTemperature', 'roastStartIndex', 'roastEndIndex',
@@ -41,14 +41,21 @@ def develop_point_df(df, curve_df):
               'comments', 'roastNumber', 'firmware', 'missingSeconds', 'rating', 'beanId']
     point_df = pd.DataFrame(df, columns=point_list).reset_index()
     point_df.drop(columns='index', inplace=True)
+    
+    print (point_df.info())
     point_df.indexYellowingStart = point_df.indexYellowingStart.fillna(value=np.nan)
     #point_df.indexFirstCrackStart = point_df.indexFirstCrackStart.fillna(value=np.nan)
 
-    # Find turning point index and index at 165 deg bean Temp
-    sampleRate = 2
-    roastName_df = curve_df.groupby(['roastName'])
+    # Replace bad FC points with np.nan and create firstCrackTime 
+    point_df.loc[(point_df.indexFirstCrackStart == 0), 'indexFirstCrackStart'] = np.nan
+    point_df.loc[(point_df.indexFirstCrackStart > 10000), 'indexFirstCrackStart'] = np.nan
+    point_df['firstCrackTime'] = point_df.indexFirstCrackStart / 60 / 2
+
+    return point_df
     
-    for name, group in roastName_df:
+#12/05 fix for firstCrackTime and firstCrackTemp
+def get_first_crack_temp(df, point_df):  # *** rename this function
+    for name, group in df.groupby('roastName'):
         minBT = group.beanTemperature.min()
         for i, row in group.iterrows():
             if row.beanTemperature == minBT:  # previously-  and row.beanDerivative >= 0  but a small % of roasts were assigned nan
@@ -60,28 +67,68 @@ def develop_point_df(df, curve_df):
                 autoYP165 = row.indexTime
                 point_df.loc[(point_df.roastName == name), 'index165PT'] = autoYP165
                 break
-        # For each roastName get the drumTemperature from the curve_df at the index of firstCrackStart (indexFirstCrackStart) in the point_df
-        # and put it in the point_df as firstCrackTemp
-        for i, row in group.iterrows():
-            name_condition = (point_df.roastName == name)
-            # Check if indexFirstCrackStart is null/NaN
-            if pd.isna(point_df.loc[name_condition, 'indexFirstCrackStart']).any():
-                point_df.loc[name_condition, 'firstCrackTemp'] = np.nan
+        if 'indexFirstCrackStart' in group.columns:
+            first_crack_start = group['indexFirstCrackStart'].iloc[0]
+            if not pd.isna(first_crack_start):
+                first_crack_temp = group.loc[group['indexTime'] == first_crack_start, 'drumTemperature'].values[0]
+                point_df.loc[point_df['roastName'] == name, 'firstCrackTemp'] = first_crack_temp
             else:
-                index_condition = (row.indexTime == point_df.loc[name_condition, 'indexFirstCrackStart'])
-                if index_condition.any():
-                    point_df.loc[name_condition, 'firstCrackTemp'] = row.drumTemperature
-            break
+                print(f"No 'indexFirstCrackStart' for roastName: {name}")
+        else:
+            print(f"No 'indexFirstCrackStart' column in the group for roastName: {name}")
+    return point_df
         
-        # for i, row in group.iterrows():
-        #     name_condition = (point_df.roastName == name)
-        #     index_condition = (row.indexTime == point_df.loc[name_condition, 'indexFirstCrackStart'])
+        #this is the old code thats not working anyway good thing i'm in dev for now
+        #ah crap did i need that for Turning Point?  I think so##### ****
+        
+        
+    # create a new df from curve_df grouped by roastName
+    # roastName_df = curve_df.groupby(['roastName'])
+    # print (roastName_df.describe())
+    # print (roastName_df.head())
+    # for name, group in roastName_df:
+    #     minBT = group.beanTemperature.min()
+    #     for i, row in group.iterrows():
+    #         if row.beanTemperature == minBT:  # previously-  and row.beanDerivative >= 0  but a small % of roasts were assigned nan
+    #             point_df.loc[(point_df.roastName == name), 'indexTurningPoint'] = row.indexTime
+    #             point_df.loc[(point_df.roastName == name), 'ibtsTurningPointTemp'] = row.drumTemperature
+    #             break
+    #     for i, row in group.iterrows():
+    #         if row.indexTime > 120 and row.drumTemperature >= 165:
+    #             autoYP165 = row.indexTime
+    #             point_df.loc[(point_df.roastName == name), 'index165PT'] = autoYP165
+    #             break
+    #     # For each roastName get the drumTemperature from the curve_df at the index of firstCrackStart (indexFirstCrackStart)
+    #     # in the point_df and put it in the point_df as firstCrackTemp
+    #     print (f'starting firstCrackTime Section for {name}')
+    #     for i, row in group.iterrows():
+    #         name_condition = (point_df.roastName == name)
+    #         if name_condition.loc[i]:  # Check if name_condition is True for this row
+    #             print('name_condition,i, row')
+    #             print(name_condition,i, row)
+    #         # Check if indexFirstCrackStart is null/NaN
+    #         if pd.isna(point_df.loc[name_condition, 'indexFirstCrackStart']).any():
+    #             point_df.loc[name_condition, 'firstCrackTemp'] = np.nan
+    #         else:
+    #             index_condition = (row.indexTime == point_df.loc[name_condition, 'indexFirstCrackStart'])
+    #             if index_condition.any():
+    #                 point_df.loc[name_condition, 'firstCrackTemp'] = row.drumTemperature
+    #             else:
+    #                 print(f"No rows where indexTime equals indexFirstCrackStart for roastName {name}")
+    #         break
+
+    #     # for i, row in group.iterrows():
+    #     #     name_condition = (point_df.roastName == name)
+    #     #     index_condition = (row.indexTime == point_df.loc[name_condition, 'indexFirstCrackStart'])
             
-        #     if index_condition.any():
-        #         point_df.loc[name_condition, 'firstCrackTemp'] = row.drumTemperature
-        #         break
+    #     #     if index_condition.any():
+    #     #         point_df.loc[name_condition, 'firstCrackTemp'] = row.drumTemperature
+    #     #         break
 
+def develop_point_df(point_df, curve_df):
 
+    # Create a turningPointTime column to mark the TP time
+    sampleRate = 2
     point_df['turningPointTime'] = (point_df.indexTurningPoint) / 60 / sampleRate
 
  
@@ -99,11 +146,6 @@ def develop_point_df(df, curve_df):
 
     # Create a yellowPointTemp165 column to mark the YP temp as 165 always
     point_df['yellowPointTemp165'] = 165
-
-    # Replace bad FC points with np.nan
-    point_df.loc[(point_df.indexFirstCrackStart == 0), 'indexFirstCrackStart'] = np.nan
-    point_df.loc[(point_df.indexFirstCrackStart > 10000), 'indexFirstCrackStart'] = np.nan
-    point_df['firstCrackTime'] = point_df.indexFirstCrackStart / 60 / 2
    
 
     # Determine the max ROR for each roastName using an average moving window of 50 points (25 seconds)
@@ -127,10 +169,10 @@ def develop_point_df(df, curve_df):
 
 
     # Calculate Browning Phase Duration, time from Yellowing Point to First Crack Start
-    # if first crack time is true, run, else if firstCrackTime is NaN or blank set browiningPhaseTime to NaN
+    # if first crack time is > 0 calc browning phase, else if firstCrackTime is NaN or blank set browningPhaseTime to NaN
     point_df.loc[(point_df.firstCrackTime.isnull()) | 
         (point_df.firstCrackTime == '') |
-        (point_df.firstCrackTime <= 0), 'browiningPhaseTime'] = np.nan
+        (point_df.firstCrackTime <= 0), 'browningPhaseTime'] = np.nan
     point_df.loc[(point_df.firstCrackTime > 0), 'browningPhaseTime'] = point_df.firstCrackTime - point_df.yellowPointTime
 
 
