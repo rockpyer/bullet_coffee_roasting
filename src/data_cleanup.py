@@ -15,7 +15,7 @@ def basic_cleanup(df):
     other_meta = ['userId', 'isFork', 'serialNumber', 'IRSensor', 'inventory.nextGreenWeight',
                   'inventory.previousGreenWeight', 'inventory.changeInGreenWeight', 'isPrivate',
                   'slug', 'updated_at', 'updatedAt', 'hardware', 'tagids', 'recipeID',
-                  'parentUserId','parentUsername','overlayID']
+                  'parentUserId','parentUsername','overlayID', 'actions.actionTempList']
 
     # Drop the extra data
     df = df.loc[:, ~df.columns.isin(other_meta)]
@@ -34,7 +34,7 @@ def basic_cleanup(df):
 def drop_intermediate_columns(df):
     # *** TBD drop columns that are not needed for analysis
     # all index columns, others...
-    unneeded = ['roastEndIndex', 'roastStartIndex', 'indexFirstCrackStart', 'indexFirstCrackEnd', 'indexYellowingStart',
+    unneeded = ['roastEndIndex', 'roastStartIndex', 'indexFirstCrackEnd','indexYellowingStart',
                 'roastDegree', 'tagids', 'recipeID','parentUserId','parentUsername','overlayID']
     df = df.loc[:, ~df.columns.isin(unneeded)]
 

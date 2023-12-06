@@ -5,13 +5,6 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
  - ibtsDerivative  is NaN is many many older roasts! - fill - ibtsDerivative  is NaN is many many older roasts! - fill
  
 #### Problems and outliers
-<<<<<<< HEAD
-  - Many outliers and messes since 1/26 changes to pulling data from all roasts rather than select roasts
-  - deltaTemp shows some 0 or negative values
-  
-##### RAW DATA Problems
-- bad intial YP (# 25 Kenya Mix 350/140 and prob more.... go thru 1by1..Delete OLD and restore NEW)
-=======
  - iterrows is SLOW - learn vectorization and itertuple (also df.colName. vs df['colName'] 
      - do this for indexFirstCrackStart, weightLostPercent, weightLostPercent in first cell
      - and point_df auto 165 and other values 
@@ -20,7 +13,6 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
   
 ##### RAW DATA Problems
  - bad intial YP (# 25 Kenya Mix 350/140 and prob more.... go thru 1by1..Delete OLD and restore NEW)
->>>>>>> 7ee3a754c9df0956422db5c37c78e7393d08467b
 
 ##### TEMP FIX
  Some other roast has 0 sec FC time - currently replaceing row NAN (check what line)
@@ -44,46 +36,27 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
 - 2/12/21 added calcuations for YP and FC Time not just index or second values, created function for linear regression with auto time and temp unit labels
 - 9/30/21 no real work but re-touched with a few new houston roasts.  deleted a few bad roasts rather than keeping them around
 - 01/24/23 - Well it's been a min. I figured I should get back into this.  Big effort to uninstall and (w/ many problems) reinstall Anaconda Navigator.
-<<<<<<< HEAD
-  - Immediate Errors:
-=======
     - Immediate Errors:
->>>>>>> 7ee3a754c9df0956422db5c37c78e7393d08467b
     - First I found that .append was being depreciated, so I did a little work to replace them with pd.concat.
     - Now I really just want figure out what I was doing with my two different Google Drives (one wasn't syncing) and see if I'm working in the most recent space.
     - Also, wanted to figureout where I was exporting data as a .csv (I found several df_bulkloadBullet.csv files around but I can't find the code where I did that...)  Wanting to can put it into AML or DataRobot for additional learning.
     - Should try to play around with my ideas of imputing (rather than skipping) missing data and the statistical analysis of such.... if possible
-<<<<<<< HEAD
-  - 1/26/23 - Used ChatGPT to learn about beautiful soup and test scraping some sweetmaria's webdata using selenium. Good start but to the SM website is not always consistent with available data. Also I haven't tried to loop the request and gather a list of data to later be cleaned up or transformed.
-  - 1/27/23 - Used ChatGPT to clean up some wonky code and reduce errors
-  - 1/27/23 - need to clean up scatter matrix errors:
-  * /Users/ryanweller/opt/anaconda3/lib/python3.9/site-packages/pandas/plotting/_matplotlib/misc.py:100: UserWarning: Attempting to set identical left == right == 0.925 results in singular transformations; automatically expanding. ax.set_xlim(boundaries_list[j])
-- 1/27/23 - Starting to clean up this big notebook into chunks of funcationality
-=======
- - 1/26/23 - Used ChatGPT to learn about beautiful soup and test scraping some sweetmaria's webdata using selenium. Good start but to the SM website is not always consistent with available data. Also I haven't tried to loop the request and gather a list of data to later be cleaned up or transformed.
+ - 1/26/23 - Learned some beautiful soup and test scraping some sweetmaria's webdata using selenium. Good start but to the SM website is not always consistent with available data. Also I haven't tried to loop the request and gather a list of data to later be cleaned up or transformed.
  - 1/27/23 - Used ChatGPT to clean up some wonky code and reduce errors
  - 1/27/23 - need to clean up scatter matrix errors:
    * /Users/ryanweller/opt/anaconda3/lib/python3.9/site-packages/pandas/plotting/_matplotlib/misc.py:100: UserWarning: Attempting to set identical left == right == 0.925 results in singular transformations; automatically expanding. ax.set_xlim(boundaries_list[j])
  - 1/27/23 - Starting to clean up this big notebook into chunks of funcationality
->>>>>>> 7ee3a754c9df0956422db5c37c78e7393d08467b
 - 1/29/23 - Updates the github after the Australia Day BBQ. moved files and completed the refresh of the 'BulletRoastingAnalysisNotebook'.  Need to simplifly some names and break apart the notebook.
 - 06/01/23 - varied work in modularizing the notebook, cleaning up functions and doing a little more 2nd D work
 - 7/1/23 - NLP for origins, using SpaCy, FuzzyWuzzy, and pycountry.   got pretty bad results in 2 trys,  will try to limit the options to a list of coffee countries. 
 - 7/2/23 - Third try with limited list of coffee producting countries and still bad results on 1/3 of roastNames.  half because I used slang or abreviations like Guat, Guate, PNG, 1/4 because of spelling errors like Columbia (Colombia), and 1/4 actually have Kenya or Ethiopia and its just not working.
 - 9/2/23 - Used openAI api to read the roastName and respond witht the country.
   - Seemed to work like a charm and i get great results but then recalling the API key set in my environment starting causing me grief
-<<<<<<< HEAD
-- 9/10/23 - Added phases durations (time) and temps, Added ROR-est values for each phase (plan as ML feature), Added peakROR Time and Temp as moving averages over 25 seconds (eyeball estimate). Also cleaned up the README and some other bits in main.py
-  - ERRORS to deal with: ***
-    - api_key = os.environ.get('OPENAI_API_KEY') - won't get it in my environment
-    - also found- TypeError: unsupported operand type(s) for -: 'int' and 'str'
-=======
  - 9/10/23 - Added phases durations (time) and temps, Added ROR-est values for each phase (plan as ML feature), Added peakROR Time and Temp as moving averages over 25 seconds (eyeball estimate). Also cleaned up the README and some other bits in main.py
    - ERRORS to deal with: ***
      - api_key = os.environ.get('OPENAI_API_KEY') - won't get it in my environment
      - also found-
        - TypeError: unsupported operand type(s) for -: 'int' and 'str'
->>>>>>> 7ee3a754c9df0956422db5c37c78e7393d08467b
 - 10/2/23 + found successive errors after that type error in the data processing reformat with the addition of new phases and ROR vals
 - 10/17/23  - worked through all the errors in new phase and time calcs.
   - Fix more errors. Currently I find that I'm making many decisions to drop columns that I'm not interested in but need to figure out if I should still be including in a very simple way.
@@ -99,6 +72,7 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
         - I have index turning point, I need the temp at that value, maybe that’s messing with some of the RORs and phases
       - PeakROR
         - Empty everywhere
+        - 
       - DevelopmentTime   -  Is not development Phase Time… numbers are very high  500-650+, not quite seconds or half seconds of the phase (I’d expect more at 1.5-2 mins
         - I couldn’t get ChatGPT to do that for me:
               - For each unique Roast Name the new calculated phase needs to be: Point time for Point Phase DevTime] = [Point Time: Point Phase, totalRoastTime] - [Point Time: Point Phase, firstCrackTime]
@@ -177,6 +151,19 @@ def get_origin(roast_name):
 12/3/23
   - completed fixes to dev and main branches. now all runing out of Python/bullet_coffee_roasting locally
   - 
+
+12/5/23
+ - Fixed browiningPhaseTime by removing it (sp error)
+ - Fixed firstCrackTemp and a few things around it with new section of simpler code
+   - Broke this out as a new function in data_processing along with loading the point_df
+  - 
+
+NEXT = Check how this subsequently effects some of the phase calcs (intially this looks promissing)
+Next Next =  work on PeakROR
+
+
+
+
 
 
 ADDITIONAL NOTES:
