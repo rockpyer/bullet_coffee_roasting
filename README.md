@@ -1,8 +1,9 @@
-# bullet-roasting
-For ingesting, transforming, displaying, and analyzing [Allio Bullet coffee roasting data](https://aillio.com/?page_id=23112).
+# ETL, Data Enrichment, and Data Analytics for coffee roasting data
+For ingesting, transforming, displaying, and analyzing data on the [Allio Bullet coffee roaster](https://aillio.com/?page_id=23112).
 <br>by https://www.instagram.com/f.w.bennies <br>
 ![@f.w.bennies](images/friendshipsign.png)
 
+This self-created project was created to enhance and analyze data in a user's hands beyond the limitations of RoasTime software.
 - Data is extracted from .json roast files and cleaned up
 - Enhanced point data features are created by calculating key events, times and ratios such as Turning Point, Yellowing Point, Yellowing Phase, etc...
 - A Environment Variable Key for OpenAI is needed to determine Origin countried from the roastname
