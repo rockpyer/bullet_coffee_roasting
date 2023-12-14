@@ -158,7 +158,7 @@ def develop_point_df(point_df, curve_df):
     # Time/Temp and Temp/Time calculations for the IBTS drum temp
     point_df['time/temp'] = point_df.totalRoastTime / point_df.drumDropTemperature
     point_df['temp/time'] = point_df.drumDropTemperature / point_df.totalRoastTime
-   
+    point_df['Drop-ChargeDeltaTemp'] = point_df.drumDropTemperature - point_df.drumChargeTemperature
 
     # IBTS BeanProbe difference for change over time plot
     point_df['deltaIBTS-BT-atDrop'] = point_df.drumDropTemperature - point_df.beanDropTemperature

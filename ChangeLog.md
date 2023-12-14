@@ -64,7 +64,6 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
   - I feel that this phase is complete and I can probably return to tableau and make the phase and ROR charts! YAY
   - Need to visually QC all the new calcs
 
-<<<<<<< HEAD
 - 11/5/23 - 
   - flying home from Porto, I found there were many issues with the data 
     - Seems like we don’t have:
@@ -122,31 +121,6 @@ def get_origin(roast_name):
         logging.error(f"Network request failed for roast: {roast_name} with error: {e}")
         return None  # or some default value
 
-# rest of your code hereAP
-  
-=======
-11/5/23 - 
-  - flying home from Porto, I found there were many issues with the data 
-    - Seems like we don’t have:
-      - beanTurningPtTemp - only IBTSTPTemp… why
-          - I have index turning point, I need the temp at that value, maybe that’s messing with some of the RORs and phases
-      - PeakROR
-          - Empty everywhere
-      - DevelopmentTime   -  Is not development Phase Time… numbers are very high  500-650+, not quite seconds or half seconds of the phase (I’d expect more at 1.5-2 mins
-          - I couldn’t get ChatGPT to do that for me:
-              - For each unique Roast Name the new calculated phase needs to be: Point time for Point Phase DevTime] = [Point Time: Point Phase, totalRoastTime] - [Point Time: Point Phase, firstCrackTime]
-  - I fix the openAI API .env issue. should load correctly as long as you have OPENAI_API_KEY="YOU KEY" in your .env file
-  - Fixed occasional missed Turning point because I had a filter to only include minBT when the derivative was >0
-  - Next, 
-    -  28  firstCrackTemp         1 non-null      float64
-          -  related to dropping indexFirstCrackStart in data_cleanup?
-    -  33  peakRoR                0 non-null      float64
-    -  39  browiningPhaseTime     0 non-null      float64
-    -  43  RoR-browning-est       0 non-null      float64
-    -  14  Drop-ChargeDeltaTemp   0 non-null      float64
-
-11/xx/23 
-  - Changes not captured in git branch issues
 
 12/3/23
   - completed fixes to dev and main branches. now all runing out of Python/bullet_coffee_roasting locally
@@ -156,28 +130,32 @@ def get_origin(roast_name):
  - Fixed browiningPhaseTime by removing it (sp error)
  - Fixed firstCrackTemp and a few things around it with new section of simpler code
    - Broke this out as a new function in data_processing along with loading the point_df
-  - 
 
+12/10/23
+ - updated the readme file, looked up some information on trapz and integers
+ - 
 NEXT = Check how this subsequently effects some of the phase calcs (intially this looks promissing)
-Next Next =  work on PeakROR
+Next Next =  work on PeakROR,  Drop-ChargeDeltaTemp, RoR-development-est
+Change to RW profiles, now not recording beanChargeTemperature	beanDropTemperature	drumChargeTemperature	drumDropTemperature, (and RoR-fullRoast-est)
+THEN DTR
 
+12/13/23
+- Set up a github project kanban board to learn about system and linked to the repo
 
-
+12/14/23
+- Fixed Drop-ChargeDeltaTemp
 
 
 
 ADDITIONAL NOTES:
 
-- Future: Also might need to try and look up the beanId ex: "beanId": "9e7d2b7e-1f51-4baf-bc3c-5b061d91acd8"  from roast.world
+- Future: Numerical integration of power and fan data with Trapz to understand power2point and momentum of roast
+- Also might need to try and look up the beanId ex: "beanId": "9e7d2b7e-1f51-4baf-bc3c-5b061d91acd8"  from roast.world
 - Maybe scrape roast.world... check out third AI scraper
 
 
 ## NEXT - calculate phases and DTR
-<<<<<<< HEAD
-## Next use framework in clean up to get rid of more columns and junk
-=======
 ## Next - use framework in clean up to get rid of more columns and junk
->>>>>>> 7ee3a754c9df0956422db5c37c78e7393d08467b
 - why is weight loss % not working
 - How about WL% / DTR (plot wl% vs DTR,   then WL%/DTR vs drop temp!
 - (Delta ITBS and BT) vs roastDate [can we see the machine getting dirty and probes changing?, when did I change?]
@@ -192,15 +170,12 @@ ADDITIONAL NOTES:
 
 - fill in ITBS derivitive for RT2 (RT3 algo is probably hidden, not easy)]
 - potentially skip 2 calculus steps above and move on with data exploration and results
-<<<<<<< HEAD
 - report out on bean probe correlation (charge, TP, yellow, FC, drop) 
 - effect on preheat (drumChargeTemperature) and events (TP, yellow, FC)
 - limited estimates from weight loss and acknowledged challenges
-=======
 - - report out on bean probe correlation (charge, TP, yellow, FC, drop) 
 - - effect on preheat (drumChargeTemperature) and events (TP, yellow, FC)
 - - limited estimates from weight loss and acknowledged challenges
->>>>>>> 7ee3a754c9df0956422db5c37c78e7393d08467b
 - tracking tasting notes.   - how to keep a simple and useful loger for this project?
 - set future colors to deuteranomaly friendly palettes (avoid red+green)
 
