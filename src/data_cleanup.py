@@ -30,6 +30,13 @@ def basic_cleanup(df):
     
     return df
 
+def fill_derivative_values(df):
+    #fill all ibtsDerivative NAN values with 0 (usually just the first 1-2 rows, pretty negligible)
+    df['ibts2ndDerivative'] = df['ibts2ndDerivative'].fillna(0)
+
+    #fill all ibtsDerivative values now (usually just the first row and negligible)
+    df['ibtsDerivative'] = df['ibtsDerivative'].fillna(0)
+    return df
 
 def drop_intermediate_columns(df):
     # *** TBD drop columns that are not needed for analysis

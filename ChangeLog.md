@@ -133,17 +133,23 @@ def get_origin(roast_name):
 
 12/10/23
  - updated the readme file, looked up some information on trapz and integers
- - 
-NEXT = Check how this subsequently effects some of the phase calcs (intially this looks promissing)
-Next Next =  work on PeakROR,  Drop-ChargeDeltaTemp, RoR-development-est
-Change to RW profiles, now not recording beanChargeTemperature	beanDropTemperature	drumChargeTemperature	drumDropTemperature, (and RoR-fullRoast-est)
-THEN DTR
+
 
 12/13/23
 - Set up a github project kanban board to learn about system and linked to the repo
 
 12/14/23
 - Fixed Drop-ChargeDeltaTemp
+
+12/20/23 - flight to Tokyo
+- fixed peakROR pick and 
+- a bunch of troubleshooting to get the right peakRORTime selected from the moving window
+  
+TODO: Run on wifi with OPENAI names; commit and push, update backlog
+NEXT = QC results for phase calcs (intially this looks promissing)
+Next Next =  work  RoR-development-est
+Change to RW profiles, now not recording beanChargeTemperature	beanDropTemperature	drumChargeTemperature	drumDropTemperature, (and RoR-fullRoast-est)
+THEN DTR
 
 
 

@@ -7,7 +7,7 @@ from importlib import reload
 from pathlib import Path
 from pprint import pprint
 from src.data_load import load_roasting_data
-from src.data_cleanup import basic_cleanup, drop_intermediate_columns
+from src.data_cleanup import basic_cleanup, fill_derivative_values, drop_intermediate_columns
 import src.data_processing #***
 from src.data_processing import deconstruct_temp_curves, develop_point_df, check_missing_values
 from src.data_processing import create_point_df, get_first_crack_temp
@@ -54,6 +54,9 @@ print ("Deconstruct Done")
 point_df = create_point_df(df)
 print ("Create Point_df Done")
 
+curve_df = fill_derivative_values(curve_df)
+print ('Filled nan values in derivative')
+
 # get first crack temp
 point_df = get_first_crack_temp(curve_df, point_df)
 print ("Get First Crack Temp Done")
@@ -83,7 +86,7 @@ print(f"Function took {elapsed_time} seconds to run.")
 # %% Personaly checking some results with plots as i fix the phases ***
 ############################################################################
 display (point_df)
-# %%
+|# %%
 display (curve_df)
 #%%
 ###  not working right now
@@ -97,6 +100,7 @@ fig.show()
 
 # %% ###### chcking out some data from the curve_df  ***
 # make a new df of curve_df based on just the first 10 roastNames in point_df
+import plotly.express as px
 new_df = curve_df.loc[curve_df.roastName.isin(point_df.roastName.head(10))]
 
 # group roasts by roastName and plot the first 10 beanTemperatures for the first 10 roasts in curve_df
@@ -121,9 +125,14 @@ print ("Post-process cleanup Done")
 # Check
 check_missing_values(point_df)
 
+##########
 # Export the processed curve_df and point_df to a .csv file
-export_processed_data(curve_df, point_df)
+#######
+# export_processed_data(curve_df, point_df)
 print ("Export Processed Data Done")
+
+
+
 #%%
 # Simple QC Plots #
 # plot_bar(point_df)
