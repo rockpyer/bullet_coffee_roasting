@@ -66,15 +66,18 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
   - Need to visually QC all the new calcs
 
 - 11/5/23 - 
+- 11/5/23 - 
   - flying home from Porto, I found there were many issues with the data 
     - Seems like we don’t have:
       - beanTurningPtTemp - only IBTSTPTemp… why
+        - I have index turning point, I need the temp at that value, maybe that’s messing with some of the RORs and phases
         - I have index turning point, I need the temp at that value, maybe that’s messing with some of the RORs and phases
       - PeakROR
         - Empty everywhere
         - 
         - 
       - DevelopmentTime   -  Is not development Phase Time… numbers are very high  500-650+, not quite seconds or half seconds of the phase (I’d expect more at 1.5-2 mins
+        - I couldn’t get ChatGPT to do that for me:
         - I couldn’t get ChatGPT to do that for me:
               - For each unique Roast Name the new calculated phase needs to be: Point time for Point Phase DevTime] = [Point Time: Point Phase, totalRoastTime] - [Point Time: Point Phase, firstCrackTime]
   - I fix the openAI API .env issue. should load correctly as long as you have OPENAI_API_KEY="YOU KEY" in your .env file
@@ -195,6 +198,9 @@ ADDITIONAL NOTES:
 - report out on bean probe correlation (charge, TP, yellow, FC, drop) 
 - effect on preheat (drumChargeTemperature) and events (TP, yellow, FC)
 - limited estimates from weight loss and acknowledged challenges
+- report out on bean probe correlation (charge, TP, yellow, FC, drop) 
+- effect on preheat (drumChargeTemperature) and events (TP, yellow, FC)
+- limited estimates from weight loss and acknowledged challenges
 - - report out on bean probe correlation (charge, TP, yellow, FC, drop) 
 - - effect on preheat (drumChargeTemperature) and events (TP, yellow, FC)
 - - limited estimates from weight loss and acknowledged challenges
@@ -209,6 +215,10 @@ ADDITIONAL NOTES:
 - add additional target points like 185, maybe 180 and 190 or others?
 - Add soak/no_soak boolean
 =======
+- add additional target points like 185, maybe 180 and 190 or others?
+- Add soak/no_soak boolean
+=======
  - add additional target points like 185, maybe 180 and 190 or others?
  - Add soak/no_soak boolean
  
+-
