@@ -11,3 +11,4 @@ log_file.log
 csvExports/raw_bullet-roasting_df.csv
 Testing.ipynb
 /otherFiles
+.gitignore
