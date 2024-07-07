@@ -42,6 +42,7 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
     - Also, wanted to figureout where I was exporting data as a .csv (I found several df_bulkloadBullet.csv files around but I can't find the code where I did that...)  Wanting to can put it into AML or DataRobot for additional learning.
     - Should try to play around with my ideas of imputing (rather than skipping) missing data and the statistical analysis of such.... if possible
  - 1/26/23 - Learned some beautiful soup and test scraping some sweetmaria's webdata using selenium. Good start but to the SM website is not always consistent with available data. Also I haven't tried to loop the request and gather a list of data to later be cleaned up or transformed.
+ - 1/26/23 - Learned some beautiful soup and test scraping some sweetmaria's webdata using selenium. Good start but to the SM website is not always consistent with available data. Also I haven't tried to loop the request and gather a list of data to later be cleaned up or transformed.
  - 1/27/23 - Used ChatGPT to clean up some wonky code and reduce errors
  - 1/27/23 - need to clean up scatter matrix errors:
    * /Users/ryanweller/opt/anaconda3/lib/python3.9/site-packages/pandas/plotting/_matplotlib/misc.py:100: UserWarning: Attempting to set identical left == right == 0.925 results in singular transformations; automatically expanding. ax.set_xlim(boundaries_list[j])
@@ -71,6 +72,7 @@ RT2 - no ibtsDerivitive and no uid. (Calculate derivitive for this before starin
         - I have index turning point, I need the temp at that value, maybe that’s messing with some of the RORs and phases
       - PeakROR
         - Empty everywhere
+        - 
         - 
       - DevelopmentTime   -  Is not development Phase Time… numbers are very high  500-650+, not quite seconds or half seconds of the phase (I’d expect more at 1.5-2 mins
         - I couldn’t get ChatGPT to do that for me:
@@ -133,11 +135,7 @@ def get_origin(roast_name):
 
 12/10/23
  - updated the readme file, looked up some information on trapz and integers
- - 
-NEXT = Check how this subsequently effects some of the phase calcs (intially this looks promissing)
-Next Next =  work on PeakROR,  Drop-ChargeDeltaTemp, RoR-development-est
-Change to RW profiles, now not recording beanChargeTemperature	beanDropTemperature	drumChargeTemperature	drumDropTemperature, (and RoR-fullRoast-est)
-THEN DTR
+
 
 12/13/23
 - Set up a github project kanban board to learn about system and linked to the repo
@@ -145,10 +143,34 @@ THEN DTR
 12/14/23
 - Fixed Drop-ChargeDeltaTemp
 
+12/20/23 - flight to Tokyo
+- fixed peakROR pick and 
+- a bunch of troubleshooting to get the right peakRORTime selected from the moving window
+
+
+07/07/24
+- Cleaned up cells and removed some old code in main.py
+- added requirements.txt
+- added a few more notes to the README.md
+- updated AI.py to use GPT4o and tighten that code up a bit
+- planning to add data_analysis and data_visualization modules to the project
+-  
+---------
+NEXT = QC results for phase calcs (intially this looks promissing)
+Next Next =  work  RoR-development-est
+Change to RW profiles, now not recording beanChargeTemperature	beanDropTemperature	drumChargeTemperature	drumDropTemperature, (and RoR-fullRoast-est)
+THEN DTR
+# ^ not sure how much of that was completed
+NEXT - classify SOAK and NO_SOAK
+
+OPENAI - look for a decent API of coffee realated data and do some more work to keep learning APIs
+
 
 
 ADDITIONAL NOTES:
 
+- Future: Numerical integration of power and fan data with Trapz to understand power2point and momentum of roast
+- Also might need to try and look up the beanId ex: "beanId": "9e7d2b7e-1f51-4baf-bc3c-5b061d91acd8"  from roast.world
 - Future: Numerical integration of power and fan data with Trapz to understand power2point and momentum of roast
 - Also might need to try and look up the beanId ex: "beanId": "9e7d2b7e-1f51-4baf-bc3c-5b061d91acd8"  from roast.world
 - Maybe scrape roast.world... check out third AI scraper
@@ -190,4 +212,5 @@ ADDITIONAL NOTES:
  - add additional target points like 185, maybe 180 and 190 or others?
  - Add soak/no_soak boolean
  
+-
 -
