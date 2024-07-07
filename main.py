@@ -23,6 +23,7 @@ from src.data_cleanup import basic_cleanup, fill_derivative_values, drop_interme
 from src.data_processing import deconstruct_temp_curves, develop_point_df, check_missing_values, create_point_df, get_first_crack_temp
 from src.data_export import export_raw_data, export_processed_data
 from src.plots import plot_scatter#, plot_bar, plot_box, plot_scatter_matrix
+from src.plots import plot_scatter#, plot_bar, plot_box, plot_scatter_matrix
 from src.AI import get_origin
 
 logging.basicConfig(filename='log_file.log', level=logging.DEBUG)
@@ -66,6 +67,7 @@ point_df = get_first_crack_temp(curve_df, point_df)
 print ("Get First Crack Temp Done")
 
 # Develop Point_DF
+point_df = develop_point_df(point_df, curve_df)
 point_df = develop_point_df(point_df, curve_df)
 print ("Develop Point_DF Done")
 
