@@ -212,5 +212,3 @@ ADDITIONAL NOTES:
  - add additional target points like 185, maybe 180 and 190 or others?
  - Add soak/no_soak boolean
  
--
--

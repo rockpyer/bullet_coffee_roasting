@@ -10,3 +10,4 @@ log_file.log
 /csvExports
 csvExports/raw_bullet-roasting_df.csv
 Testing.ipynb
+/otherFiles
