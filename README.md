@@ -24,7 +24,7 @@ This project transforms and analyzes data from the [Allio Bullet coffee roaster]
 
 - **Phase and Feature Engineering**: The `point_df` DataFrame is enhanced with additional points (e.g.turningPointTime, yellowingPhaseTime, and avgYellowingPhaseROR) to characterize and quantify relationships throughout the roast.
 
-- **Origin Determination**: The origin of the coffee is determined based on the roast name using OpenAI GPT3.5 and added to the `point_df` DataFrame.
+- **Origin Determination**: The origin of the coffee is determined based on the roast name using OpenAI  and added to the `point_df` DataFrame.
 
 ## Usage
 
@@ -35,7 +35,7 @@ To run the analysis, simply run the `main.py` script. The script will print mess
   - Phase and key point temps are IBTS (drum) temps unless specifically noted. Turning point can only be calculated from beanTemp but the same index time is used to find the ibtsTemp at that time. 
  - Several cleanup functions are catered to my own practices, issues, and needs. For example, I rarely roast into second crack and always record ambient temp, humidity and green weight. If you don't record some of these values, the application will likely filter out those rows or totally bugout.
  - Assumed that your RoastTime is installed in the default MacOS location. Else edit 'base_path'
- - Built for my V2 Bullet purchased in July 2020 - the data structure of the .json files have changed over time which requires some merges or gap fixes. I have tended to exclude attributes that have been added or removed from the data file in Allio's updates over the years (roast color, Roast Degree)
+ - Built for my V2 Bullet purchased in July 2020 - the data structure of the .json files have changed from Allio's updates over the years (roast color, Roast Degree). At times I have exclude attributes that have been added or removed, this may need to be updated in the future.
 
 ## Future Work
 

@@ -144,12 +144,24 @@ def get_origin(roast_name):
 12/20/23 - flight to Tokyo
 - fixed peakROR pick and 
 - a bunch of troubleshooting to get the right peakRORTime selected from the moving window
-  
-TODO: Run on wifi with OPENAI names; commit and push, update backlog
+
+
+07/07/24
+- Cleaned up cells and removed some old code in main.py
+- added requirements.txt
+- added a few more notes to the README.md
+- updated AI.py to use GPT4o and tighten that code up a bit
+- planning to add data_analysis and data_visualization modules to the project
+-  
+---------
 NEXT = QC results for phase calcs (intially this looks promissing)
 Next Next =  work  RoR-development-est
 Change to RW profiles, now not recording beanChargeTemperature	beanDropTemperature	drumChargeTemperature	drumDropTemperature, (and RoR-fullRoast-est)
 THEN DTR
+# ^ not sure how much of that was completed
+NEXT - classify SOAK and NO_SOAK
+
+OPENAI - look for a decent API of coffee realated data and do some more work to keep learning APIs
 
 
 
