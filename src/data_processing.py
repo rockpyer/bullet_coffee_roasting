@@ -147,13 +147,38 @@ def develop_point_df(point_df, curve_df):
     # Create a yellowPointTemp165 column to mark the YP temp as 165 always
     point_df['yellowPointTemp165'] = 165
    
-
-    # Determine the max ROR for each roastName using an average moving window of 50 points (25 seconds)
-    point_df['peakRoR'] = curve_df.groupby('roastName')['ibts2ndDerivative'].rolling(50, center=True).mean().groupby(level=1).max().reset_index(drop=True)
-    window_size = 50
-    roll_max = curve_df.groupby('roastName')['ibts2ndDerivative'].apply(lambda x: x.rolling(window=window_size, center=True).mean().idxmax() / 60 / sampleRate).reset_index(drop=True)
-    point_df['peakRoRTime'] = roll_max
     
+    ###############
+    # # Determine the peakROR for each roastName using an average rolling window
+    ###############
+    # setting 20-25 window size
+    window_size = 20
+    new_df = pd.DataFrame()
+    new_df['peakROR'] = curve_df.groupby('roastName')['beanDerivative'].rolling(window=window_size, center=True).mean().groupby(level=0).max()
+
+    # Define a custom function to get the indexTime associated with the peak ROR
+    def get_max_index_and_time(group):
+        rolling_mean = (
+            group['beanDerivative']
+            .rolling(window=window_size, center=True)
+            .mean()
+        )
+        max_index_time = rolling_mean.nlargest(1).idxmin()
+        return pd.Series({
+            'roastName': group['roastName'].iloc[0],  # Take the roastName value from the group
+            'maxROR25_indexTime': group.loc[max_index_time, 'indexTime']
+        })
+
+    # Apply the custom function to each group
+    maxROR_info = curve_df.groupby('roastName').apply(get_max_index_and_time).reset_index(drop=True)
+
+    # Merge new_df with maxROR_info on 'roastName'
+    new_df = pd.merge(new_df, maxROR_info, on='roastName', how='left')
+    new_df['peakRORTime'] = new_df['maxROR25_indexTime']/2
+    new_df = new_df.reset_index(drop=True)
+    #merge new_df into point_df based on roastName
+    point_df = point_df.merge(new_df[['roastName', 'peakROR', 'peakRORTime']], on='roastName', how='left')
+    ###############
 
     # Time/Temp and Temp/Time calculations for the IBTS drum temp
     point_df['time/temp'] = point_df.totalRoastTime / point_df.drumDropTemperature
@@ -215,7 +240,3 @@ def check_missing_values(df):
         print(f"In the dataframe passed, the following columns have missing values: \n{missing_cols}")
     else:
         print(f"No missing values found in the DataFrame passed.")
-
-
-# store of additional coffee regions
-# Flores, Java, Sulawesi, Sumatra, Timor, Bali
