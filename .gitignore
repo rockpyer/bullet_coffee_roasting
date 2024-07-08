@@ -1,11 +1,12 @@
 /Bullet_Roasting_Analysis/
-/.ipynb_checkpoints
+/.ipynb_checkpoints/
+/.vscode/
 /src/__pycache__/
 /otherFiles/
 /oldFiles/
 /data/
 /csvExports/
 /..bfg-report/
+BulletRoastingAnalysisNotebook.ipynb
 .env
-.vscode
 log_file.log
