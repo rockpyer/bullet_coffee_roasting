@@ -1,10 +1,10 @@
 # %%
-# This script uses GPT-3.5 to identify the country of origin from the roastName
+# This script uses OpenAI to identify the country of origin from the roastName
 import os
 from openai import OpenAI
 import json
-#using the OAI key ending 'dm0k2'
-
+#previously using the OAI key ending 'dm0k2'
+#now using key ending M6I9A
 
 ## Set the API key and model name
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -41,3 +41,5 @@ def get_origin(roast_name):
   originName = json.loads(completion.choices[0].message.content).get("Origin", None) 
   #print (roast_name, originName)
   return (originName)
+
+# %%
