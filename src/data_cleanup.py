@@ -41,9 +41,14 @@ def fill_derivative_values(df):
 def drop_intermediate_columns(df):
     # *** TBD drop columns that are not needed for analysis
     # all index columns, others...
-    unneeded = ['roastEndIndex', 'roastStartIndex', 'indexFirstCrackEnd','indexYellowingStart',
-                'roastDegree', 'tagids', 'recipeID','parentUserId','parentUsername','overlayID']
+    unneeded = ['roastEndIndex', 'roastStartIndex', 'indexFirstCrackEnd','indexYellowingStart', 'missingSeconds',
+                'roastDegree', 'tagids', 'recipeID','parentUserId','parentUsername','overlayID', ]
     df = df.loc[:, ~df.columns.isin(unneeded)]
 
     return df
+
+def reorder_columns(curve_df):
+    # Reorder columns
+    curve_df = curve_df[['roastName', 'dateTime', 'indexTime', 'beanTemperature', 'drumTemperature', 'ibtsDerivative', 'ibts2ndDerivative']]
+    return curve_df
     

@@ -31,14 +31,14 @@ def export_processed_data(curve_df, point_df):
 
         print (f'Exported {point_filename} and {curve_filename} to csvExports folder')
 
-        # Convert point_df to JSON format
-        point_JSONfilename = f'point_data_{timestamp}.json'
-        point_df_json = point_df.to_json(orient='records')
-        # Export the JSON data to a file
-        with open(subfolder + point_JSONfilename, 'w') as file:
-            file.write(point_df_json)
+        # # Convert point_df to JSON format  *** pulled this out since I don't use it
+        # point_JSONfilename = f'point_data_{timestamp}.json'
+        # point_df_json = point_df.to_json(orient='records')
+        # # Export the JSON data to a file
+        # with open(subfolder + point_JSONfilename, 'w') as file:
+        #     file.write(point_df_json)
 
-        print("Exported point_df to JSON Done")
+        # print("Exported point_df to JSON Done")
     except Exception as e:
         debug_info = f"An error occurred: {e}"
 
