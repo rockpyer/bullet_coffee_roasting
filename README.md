@@ -1,6 +1,6 @@
-# Allio Bullet Coffee Roasting Data Analysis
+# Aillio Bullet Coffee Roasting Data Analysis
 
-This project transforms and analyzes data from the [Allio Bullet coffee roaster](https://aillio.com/?page_id=23112) in order to measure and understand the various factors that influence roast quality. This is a project of my own pasion and interests https://www.instagram.com/f.w.bennies
+This project transforms and analyzes data from the [Aillio Bullet coffee roaster](https://aillio.com/?page_id=23112) in order to measure and understand the various factors that influence roast quality. This is a project of my own pasion and interests https://www.instagram.com/f.w.bennies
 
 ![@f.w.bennies](images/friendshipsign.png)
 
@@ -35,7 +35,7 @@ To run the analysis, simply run the `main.py` script. The script will print mess
   - Phase and key point temps are IBTS (drum) temps unless specifically noted. Turning point can only be calculated from beanTemp but the same index time is used to find the ibtsTemp at that time. 
  - Several cleanup functions are catered to my own practices, issues, and needs. For example, I rarely roast into second crack and always record ambient temp, humidity and green weight. If you don't record many of these values, the application will likely filter out those rows or create errors.
  - Assumed that your RoastTime is installed in the default MacOS location. Else edit 'base_path'
- - Built for my V2 Bullet purchased in July 2020 - the data structure of the .json files have changed from Allio's updates over the years (roast color, Roast Degree). At times I have exclude attributes that have been added or removed, this may need to be updated in the future.
+ - Built for my V2 Bullet purchased in July 2020 - the data structure of the .json files have changed from Aillio's updates over the years (roast color, Roast Degree). At times I have exclude attributes that have been added or removed, this may need to be updated in the future.
  - 
 ## Future Work
 
