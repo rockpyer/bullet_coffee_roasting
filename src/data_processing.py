@@ -3,38 +3,36 @@
 ### point_df as single point attributes that are in a list and converting them to a dataframe
 import pandas as pd
 import numpy as np
-import traceback
 
-def deconstruct_temp_curves(df):
-    try:
-        temp_curve_df = pd.DataFrame()
-        curve_df = pd.DataFrame()
-        for index, row in df.iterrows():
-            temp_curve_df = pd.DataFrame([pd.Series(row['beanTemperature'], name='beanTemperature', dtype='float64'),
-                                        pd.Series(row['drumTemperature'], name='drumTemperature', dtype='float64'),
-                                        pd.Series(row['beanDerivative'], name='beanDerivative', dtype='float64'),
-                                        pd.Series(row['ibtsDerivative'], name='ibtsDerivative', dtype='float64')]).T
-            temp_curve_df['roastName'] = row['roastName']
-            temp_curve_df['indexTime'] = temp_curve_df.index
-            temp_curve_df['indexFirstCrackStart'] = row['indexFirstCrackStart']
-            temp_curve_df['softwareVersion'] = row['softwareVersion']
-            curve_df = pd.concat([curve_df, temp_curve_df], ignore_index=True)
+# def deconstruct_temp_curves(df):
+#     try:
+#         temp_curve_df = pd.DataFrame()
+#         curve_df = pd.DataFrame()
+#         for index, row in df.iterrows():
+#             temp_curve_df = pd.DataFrame([pd.Series(row['beanTemperature'], name='beanTemperature', dtype='float64'),
+#                                         pd.Series(row['drumTemperature'], name='drumTemperature', dtype='float64'),
+#                                         pd.Series(row['beanDerivative'], name='beanDerivative', dtype='float64'),
+#                                         pd.Series(row['ibtsDerivative'], name='ibtsDerivative', dtype='float64')]).T
+#             temp_curve_df['roastName'] = row['roastName']
+#             temp_curve_df['indexTime'] = temp_curve_df.index
+#             temp_curve_df['indexFirstCrackStart'] = row['indexFirstCrackStart']
+#             temp_curve_df['softwareVersion'] = row['softwareVersion']
+#             curve_df = pd.concat([curve_df, temp_curve_df], ignore_index=True)
                         
-        # Calculate second derivative ***
-        ### 2nd Derivative updated from apply to transform, review and see how to improve and smooth
-        curve_df['ibts2ndDerivative'] = curve_df.groupby('roastName')['ibtsDerivative'].transform(lambda x: x.diff())
+#         # Calculate second derivative ***
+#         ### 2nd Derivative updated from apply to transform, review and see how to improve and smooth
+#         curve_df['ibts2ndDerivative'] = curve_df.groupby('roastName')['ibtsDerivative'].transform(lambda x: x.diff())
         
-        curve_df.fillna(value=np.nan, inplace=True)
+#         curve_df.fillna(value=np.nan, inplace=True)
+#         return curve_df
     
-        return curve_df
-    
-    except Exception as e:
-        print("Error: Unable to deconstruct temperature curves.")
-        print("Exception:", str(e))
-        traceback.print_exc()
+#     except Exception as e:
+#         print("Error: Unable to deconstruct temperature curves.")
+#         print("Exception:", str(e))
+#         traceback.print_exc()
         
-        #curve_df = pd.DataFrame()
-        return curve_df 
+#         #curve_df = pd.DataFrame()
+#         return curve_df 
 
 def deconstruct_temp_curves(df):
     try:
@@ -112,6 +110,12 @@ def deconstruct_temp_curves(df):
         curve_df = curve_df[['roastName','indexTime', 'Power', 'Fan', 'Drum','beanTemperature', 'drumTemperature', 'beanDerivative', 'ibtsDerivative', 'ibts2ndDerivative','indexFirstCrackStart']]
         curve_df[['Power', 'Fan', 'Drum']] = curve_df[['Power', 'Fan', 'Drum']].astype({'Power': 'int64', 'Fan': 'int64', 'Drum': 'int64'}, errors='ignore')
 
+        print ("Created temp curves for beanTemperature, drumTemperature, beanDerivative, ibtsDerivative as curve_df via:")
+        print("   - Aligned all the temperature data to the same length (some sensors might have different sampling rates)")
+        print("   - Processed action lists (changes in power, fan, and drum settings)")
+        print("   - Forward-filled missing values (if a setting doesn't change, it carries forward the last known value)")
+        print("   - Calculated a second derivative for the IBTS temperature (rate of change of the rate of change)")
+        
         return curve_df
     
     except Exception as e:
@@ -143,8 +147,8 @@ def create_point_df(df):
 
     return point_df
     
-#12/05 fix for firstCrackTime and firstCrackTemp
-def get_first_crack_temp(df, point_df):  # *** rename this function
+#12/05/23 fix for firstCrackTime and firstCrackTemp
+def calculate_roast_milestone_points(df, point_df):
     for name, group in df.groupby('roastName'):
         minBT = group.beanTemperature.min()
         for i, row in group.iterrows():
@@ -166,54 +170,12 @@ def get_first_crack_temp(df, point_df):  # *** rename this function
                 print(f"No 'indexFirstCrackStart' for roastName: {name}")
         else:
             print(f"No 'indexFirstCrackStart' column in the group for roastName: {name}")
+            
+    print (''' Calculated the turning point (lowest bean temperature in the roast),
+        The time when the drum temperature reaches 165°C,
+        The bean temperature at first crack''')
     return point_df
         
-        #this is the old code thats not working anyway good thing i'm in dev for now
-        #ah crap did i need that for Turning Point?  I think so##### ****
-        
-        
-    # create a new df from curve_df grouped by roastName
-    # roastName_df = curve_df.groupby(['roastName'])
-    # print (roastName_df.describe())
-    # print (roastName_df.head())
-    # for name, group in roastName_df:
-    #     minBT = group.beanTemperature.min()
-    #     for i, row in group.iterrows():
-    #         if row.beanTemperature == minBT:  # previously-  and row.beanDerivative >= 0  but a small % of roasts were assigned nan
-    #             point_df.loc[(point_df.roastName == name), 'indexTurningPoint'] = row.indexTime
-    #             point_df.loc[(point_df.roastName == name), 'ibtsTurningPointTemp'] = row.drumTemperature
-    #             break
-    #     for i, row in group.iterrows():
-    #         if row.indexTime > 120 and row.drumTemperature >= 165:
-    #             autoYP165 = row.indexTime
-    #             point_df.loc[(point_df.roastName == name), 'index165PT'] = autoYP165
-    #             break
-    #     # For each roastName get the drumTemperature from the curve_df at the index of firstCrackStart (indexFirstCrackStart)
-    #     # in the point_df and put it in the point_df as firstCrackTemp
-    #     print (f'starting firstCrackTime Section for {name}')
-    #     for i, row in group.iterrows():
-    #         name_condition = (point_df.roastName == name)
-    #         if name_condition.loc[i]:  # Check if name_condition is True for this row
-    #             print('name_condition,i, row')
-    #             print(name_condition,i, row)
-    #         # Check if indexFirstCrackStart is null/NaN
-    #         if pd.isna(point_df.loc[name_condition, 'indexFirstCrackStart']).any():
-    #             point_df.loc[name_condition, 'firstCrackTemp'] = np.nan
-    #         else:
-    #             index_condition = (row.indexTime == point_df.loc[name_condition, 'indexFirstCrackStart'])
-    #             if index_condition.any():
-    #                 point_df.loc[name_condition, 'firstCrackTemp'] = row.drumTemperature
-    #             else:
-    #                 print(f"No rows where indexTime equals indexFirstCrackStart for roastName {name}")
-    #         break
-
-    #     # for i, row in group.iterrows():
-    #     #     name_condition = (point_df.roastName == name)
-    #     #     index_condition = (row.indexTime == point_df.loc[name_condition, 'indexFirstCrackStart'])
-            
-    #     #     if index_condition.any():
-    #     #         point_df.loc[name_condition, 'firstCrackTemp'] = row.drumTemperature
-    #     #         break
 
 def develop_point_df(point_df, curve_df):
 
@@ -241,12 +203,12 @@ def develop_point_df(point_df, curve_df):
     ###############
     # # Determine the peakROR for each roastName using an average rolling window
     ###############
-    # setting 20-25 window size
+    # setting 20  window size  - could adjust to 25 or other? ***
     window_size = 20
     new_df = pd.DataFrame()
     new_df['peakROR'] = curve_df.groupby('roastName')['beanDerivative'].rolling(window=window_size, center=True).mean().groupby(level=0).max()
 
-    # Define a custom function to get the indexTime associated with the peak ROR
+    # Function to get the indexTime associated with the peak ROR
     def get_max_index_and_time(group):
         rolling_mean = (
             group['beanDerivative']
@@ -320,6 +282,18 @@ def develop_point_df(point_df, curve_df):
     # Calculate the fullRoastROR from Turning Point to Drop Temp *** (future fix, this might be better if from Peak ROR to Drop)
     point_df['RoR-fullRoast-est'] = (point_df.drumDropTemperature - point_df.ibtsTurningPointTemp) / (point_df.totalRoastTime - point_df.turningPointTime)
 
+    print("\nCalculated:")
+    print("• Weight metrics: green/roasted weights and loss %")
+    print(f"• Key phases: Yellowing , Browning, Development times ")
+    print("• Temperature metrics: Drop-Charge delta, IBTS-Bean probe difference")
+    print("• Rate of Rise (ROR): calculated for yellowing, browning, development, and full roast")
+ 
+    print("\nAssumptions:")
+    print("• Sample rate: 2Hz")
+    print("• Window size for peak ROR: 20")
+    print("• Peak ROR smoothed with rolling average")
+    print("• Yellow point fixed at 165°C")
+    print("• Missing yellowing points replaced with auto-165°C detection")
     
     return point_df
 

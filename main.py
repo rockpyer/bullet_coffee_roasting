@@ -13,19 +13,14 @@ It has code cell markers to help naviate and run the code in VS Code or Jupyter 
 """
 import logging
 import os
-import time
 import numpy as np
 import pandas as pd
-#from importlib import reload
-#from pathlib import Path
-#from pprint import pprint
 from src.data_load import load_roasting_data
 from src.data_cleanup import basic_cleanup, fill_derivative_values, drop_intermediate_columns
-from src.data_processing import deconstruct_temp_curves, develop_point_df, check_missing_values, create_point_df, get_first_crack_temp
+from src.data_processing import deconstruct_temp_curves, develop_point_df, check_missing_values, create_point_df, calculate_roast_milestone_points
 from src.data_export import export_raw_data, export_processed_data
 from src.plots import plot_scatter#, plot_bar, plot_box, plot_scatter_matrix
-from src.plots import plot_scatter#, plot_bar, plot_box, plot_scatter_matrix
-from src.AI import get_origin
+from dotenv import load_dotenv
 
 logging.basicConfig(filename='log_file.log', level=logging.DEBUG)
 
@@ -60,34 +55,82 @@ point_df = create_point_df(df)
 print ("Create Point_df Complete")
 
 curve_df = fill_derivative_values(curve_df)
-print ('Filled nan values in derivative')
+print ('Filled nan values in derivative (starting values have no derivative)')
 
 # get first crack temp
-point_df = get_first_crack_temp(curve_df, point_df)
-print ("Get First Crack Temp Complete")
+point_df = calculate_roast_milestone_points(curve_df, point_df)
+print ("Calculate_roast_milestone_points Complete")
 
 # drop   'indexFirstCrackStart' column from curve_df
 curve_df = curve_df.drop(columns=['indexFirstCrackStart']) # *** future move this to a clean up function
 
 # Develop Point_DF
 point_df = develop_point_df(point_df, curve_df)
-print ("Develop Point_DF Complete")
+print ("Develop point_df Complete, point_df so far:")
 
-# %%  
-# seperate AI CALL for a min to not run it
-####### Use OpenAI to get the origin from the roastName ########
-from src.AI import get_origin
-start_time = time.time()
-print ("Geting Origin....standby")
-point_df['Origin'] = point_df['roastName'].apply(get_origin)
-
-end_time = time.time()
-elapsed_time = end_time - start_time
-print(f"Get Origin Complete. Function took {elapsed_time} seconds to run.")
+print ("n/")
+display (point_df)
 
 
-# %% # View results 
-######## RESULTS and EXPORT ########################################
+
+
+# %%
+################ ################## ############### #############
+### OPENAI API call to get ORIGIN and ROAST COUNT from the roastName in an async call
+## You would have to set up system variables for the OPENAI_API_KEY
+## This is a workflow for my methods, may not be generally useful, comment out if not needed.
+import nest_asyncio
+import asyncio
+from src.AI import process_roast_names
+
+# Apply nest_asyncio
+nest_asyncio.apply()
+
+AI_model = "gpt-4o-mini"
+roast_names = point_df['roastName'].tolist()  # Get a list of roast names from the DataFrame
+
+# Call the async function
+results = asyncio.run(process_roast_names(roast_names, AI_model))
+
+
+# Convert the results to a DataFrame
+results_df = pd.DataFrame(results, columns=['Origin', 'roastCount'])
+results_df['roastName'] = roast_names  # Add the roast names to the results DataFrame
+
+# Merge the results back into the original DataFrame
+point_df = point_df.merge(results_df, on='roastName', how='left')
+point_df
+
+# %%
+############## ################ ################## ##############
+############ Density from Google Sheets workflow  ####################################
+############ This is a private workflow, that may not be useful to others ############
+# private .env file is not included in the repository, has all the info about my gsheet
+
+from src.GsheetDensity import getDensityGSheetPublic
+# Call the getDensityGSheet function to retrieve the density data from Google Sheets
+
+
+#density_df = getDensityGSheet()
+density_df = getDensityGSheetPublic()
+
+
+## Planned to do:
+## 1. Merge density_df with point_df
+## 2. do some light analysis on density related to roastTime/Temp
+## 3. review soak to TP relationships
+## 4. consider if I can create a sliding variable of 'early roast power' to better define soak and the relationship to TP
+## 5. lots more denisty stuff
+## 6. move this or the analysis to another .py file.  this one being the data processing and export
+
+
+# Print the density_df to verify the data
+print(density_df)
+
+# %%
+#######################################################################################
+#########  FINISHING STEPS and RESULTS and EXPORT  ####################################
+#######################################################################################
 print (point_df)  # *** future pip install tabulate and print(tabulate(point_df, headers='keys', tablefmt='psql')) 
 print (curve_df) ## removed notebook display methods so it works for others
 
@@ -102,76 +145,29 @@ check_missing_values(point_df)
 # Export the processed curve_df and point_df to a .csv file
 #######
 export_processed_data(curve_df, point_df)
-print ("Export Processed Data to csv Complete")
+# export density_df to csv in subfolder = 'csvExports/'  *** future add to above function
+# *** add a timestamp or better yet, consider a system to not clutter the folder with multiple exports
+density_df.to_csv('csvExports/density_df.csv', index=False)
 
+print ("Export point_df, curve_df, and density_df to csv Complete")
+print ("All Done!")
 
+ # %%
+ # ######## WORKING ###########    ########
+ #############################    #####
 
- #%%
-# Simple QC Plots #
-# plot_bar(point_df)
-# plot_box(point_df)
-plot_scatter(point_df)
+ 
+################################################## =============== ###############
 
-#plot_scatter_matrix(point_df) #currently has issuse with missing values
-# In the dataframe passed, the following columns have missing values: 
-# ['weightLostPercent', 'ambient', 'humidity', 'Drop-ChargeDeltaTemp', 
-# 'comments', 'rating', 'beanId', 'indexTurningPoint', 'ibtsTurningPointTemp', 
-# 'turningPointTime']
+# Clean up and review of DensityGSheet,   bring in density data into point_df
+# count unique roastCount values and rows in point_df
+print(point_df['roastCount'].nunique())
+display (point_df['roastCount'].value_counts())
+print(point_df.shape[0])
+#Merge density_df with point_df on roastCount 
+point_df = pd.merge(point_df, density_df, on='roastCount', how='left')
+#drop blank column, roasted gram & other density notes in point_df
+point_df = point_df.drop(columns=['', 'roastedGram', 'densityNotes'], errors='ignore')
+display (point_df)
 
-
-
-# %%
-#view outliers
-# Calculate the Z-score for each observation in the 'beanChargeTemperature' column
-z_scores = np.abs((point_df['beanChargeTemperature'] - point_df['beanChargeTemperature'].mean()) / point_df['beanChargeTemperature'].std())
-
-# Set a threshold for the Z-score to identify outliers in the 'beanChargeTemperature'
-threshold = 3
-
-# Filter the dataframe to only include observations with a Z-score greater than the threshold
-outliers = point_df[z_scores > threshold]
-
-# Print the outliers
-print("outliners in beanChargeTemperature")
-print(outliers[['roastName', 'beanChargeTemperature']])
-
-
-# %%
-# quick review with a correlation matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-# Load your data
-
-# Calculate correlation matrix
-corr_matrix = point_df.corr()
-
-# Plot heatmap
-plt.figure(figsize=(12, 8))
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
-plt.title('Correlation Matrix of Coffee Roasting Data')
-plt.show()
-
-# %%
-import matplotlib.pyplot as plt
-
-# Step 1: Group curve_df by 'roastName'
-grouped = curve_df.groupby('roastName')
-
-# Step 2: Identify the third to last roast name
-roast_names = grouped.groups.keys()
-roast_name = sorted(roast_names)[29]
-
-# Step 3: Filter curve_df for the identified roast name
-filtered_df = curve_df[curve_df['roastName'] == roast_name]
-
-# Step 4: Plot the IBTS Derivative Values
-plt.figure(figsize=(10, 6))
-plt.plot(filtered_df['indexTime'], filtered_df['ibts2ndDerivative'], label='ibts2ndDerivative')
-plt.title(f'IBTS Derivative for {roast_name}')
-plt.xlabel('indexTime')
-plt.ylabel('IBTS 2nd Derivative')
-plt.ylim(-1, 25)
-plt.legend()
-plt.show()
 # %%

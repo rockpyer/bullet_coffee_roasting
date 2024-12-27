@@ -15,7 +15,7 @@ def basic_cleanup(df):
     other_meta = ['userId', 'isFork', 'serialNumber', 'IRSensor', 'inventory.nextGreenWeight',
                   'inventory.previousGreenWeight', 'inventory.changeInGreenWeight', 'isPrivate',
                   'slug', 'updated_at', 'updatedAt', 'hardware', 'tagids', 'recipeID',
-                  'parentUserId','parentUsername','overlayID', 'actions.actionTempList']
+                  'parentUserId','parentUsername','overlayID', 'actions.actionTempList', 'deviceType']
 
     # Drop the extra data
     df = df.loc[:, ~df.columns.isin(other_meta)]
@@ -28,6 +28,9 @@ def basic_cleanup(df):
     #reset index
     df.reset_index(drop=True, inplace=True)
     
+    #print
+    print (f'Removed unused columns from RoastTime: {other_meta}')
+    
     return df
 
 def fill_derivative_values(df):
@@ -39,12 +42,13 @@ def fill_derivative_values(df):
     return df
 
 def drop_intermediate_columns(df):
-    # *** TBD drop columns that are not needed for analysis
+    # *** TBD drop columns that are not needed for analysis in point_df 
     # all index columns, others...
     unneeded = ['roastEndIndex', 'roastStartIndex', 'indexFirstCrackEnd','indexYellowingStart', 'missingSeconds',
-                'roastDegree', 'tagids', 'recipeID','parentUserId','parentUsername','overlayID', ]
+                'roastNumber', 'roastDegree', 'tagids', 'recipeID','parentUserId','parentUsername','overlayID', ]
     df = df.loc[:, ~df.columns.isin(unneeded)]
 
+    print (f'Removed potential intermediate columns: {unneeded}')
     return df
 
 def reorder_columns(curve_df):
