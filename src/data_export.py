@@ -10,7 +10,7 @@ def export_raw_data(df):
 
     # Export the raw DataFrame to a .csv file
     df.to_csv(subfolder + "raw_bullet-roasting_df.csv", index=False)
- 
+    print (f'Exported raw_bullet-roasting_df.csv to csvExports folder')
  
  
 #export processed data curve_df and point_df
@@ -28,6 +28,9 @@ def export_processed_data(curve_df, point_df):
         # Export the raw DataFrame to a .csv file
         curve_df.to_csv(subfolder + curve_filename, index=False)
         point_df.to_csv(subfolder + point_filename, index=False)
+        # Also export the curve_df and point_df as curve_df and point_df.csv and overwrite to keep consistent files
+        curve_df.to_csv(subfolder + 'curve_df.csv', index=False)
+        point_df.to_csv(subfolder + 'point_df.csv', index=False)
 
         print (f'Exported {point_filename} and {curve_filename} to csvExports folder')
 
