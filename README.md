@@ -23,7 +23,7 @@ To run the analysis, simply run the `main.py` script. The script will print mess
 
 ## Results
 .csv outputs have enabled several other projects and analysis that help guide my roasting and learning.
-- For example a my [Bullet Coffee Roasting Dashboard](https://public.tableau.com/app/profile/ryan.weller/viz/BulletCoffeeRoastingDashboard/OverviewDash?publish=yes)
+- For example my [Bullet Coffee Roasting Dashboard](https://public.tableau.com/app/profile/ryan.weller/viz/BulletCoffeeRoastingDashboard/OverviewDash?publish=yes)
 - An unpublished LangChain project to query the data as a .csv or SQL database.
 - One off visualizations and conversations.
 
