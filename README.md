@@ -16,7 +16,7 @@ This project transforms and analyzes data from the [Aillio Bullet coffee roaster
 
 - **Phase and Feature Engineering**: The `point_df` DataFrame is enhanced with additional points (e.g.turningPointTime, yellowingPhaseTime, and avgYellowingPhaseROR) to characterize and quantify relationships throughout the roast.
 
-- **Origin Determination**: The origin of the coffee is determined based on the roast name using OpenAI and added to the `point_df` DataFrame.
+- **Origin Determination**: The origin of the coffee comes from the bean record each roast links to in RoasTime (`roast-time/beans`), with a keyword match on the roast name as a fallback, and is added to the `point_df` DataFrame. The roast count comes from the `#number` in the roast name.
 
 ## Usage
 To run the analysis, simply run the `main.py` script. The script will print messages to the console to indicate the progress of the analysis.
