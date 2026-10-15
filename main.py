@@ -7,7 +7,7 @@ It has code cell markers to help naviate and run the code in VS Code or Jupyter 
 3. Deconstruct temperature curves from lists to a new curve DataFrame & create a point DataFrame.
 4. Fill NaN values.
 5. Develop the point DataFrame by adding derived attributes.
-6. Use an AI model to extract the origin of the coffee beans.
+6. Look up the origin of the coffee beans from the linked bean record (keyword fallback on the roast name).
 7. Export the processed curve DataFrame and point DataFrame to CSV files.
 8. Clean up, check and visualize some data.
 """
@@ -76,29 +76,12 @@ display (point_df)
 
 # %%
 ################ ################## ############### #############
-### OPENAI API call to get ORIGIN and ROAST COUNT from the roastName in an async call
-## You would have to set up system variables for the OPENAI_API_KEY
-## This is a workflow for my methods, may not be generally useful, comment out if not needed.
-import nest_asyncio
-import asyncio
-from src.AI import process_roast_names
+### ORIGIN from each roast's linked bean record (RoasTime beans folder), with a roastName keyword fallback
+### ROAST COUNT from the #number in the roastName
+from src.origin import add_origin_and_roast_count
 
-# Apply nest_asyncio
-nest_asyncio.apply()
-
-AI_model = "gpt-4o-mini"
-roast_names = point_df['roastName'].tolist()  # Get a list of roast names from the DataFrame
-
-# Call the async function
-results = asyncio.run(process_roast_names(roast_names, AI_model))
-
-
-# Convert the results to a DataFrame
-results_df = pd.DataFrame(results, columns=['Origin', 'roastCount'])
-results_df['roastName'] = roast_names  # Add the roast names to the results DataFrame
-
-# Merge the results back into the original DataFrame
-point_df = point_df.merge(results_df, on='roastName', how='left')
+beans_path = os.path.join(home, 'Library/Application Support/roast-time/beans')
+point_df = add_origin_and_roast_count(point_df, beans_path)
 point_df
 
 # %%

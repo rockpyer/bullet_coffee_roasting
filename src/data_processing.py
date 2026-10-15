@@ -183,6 +183,9 @@ def develop_point_df(point_df, curve_df):
     sampleRate = 2
     point_df['turningPointTime'] = (point_df.indexTurningPoint) / 60 / sampleRate
 
+    # totalRoastTime from RoasTime is in seconds; every other *Time column here is in minutes
+    point_df['totalRoastTimeMin'] = point_df.totalRoastTime / 60
+
  
     #convert WG and WR to numeric values
     point_df['weightGreen'] = pd.to_numeric(point_df['weightGreen'])
@@ -226,7 +229,7 @@ def develop_point_df(point_df, curve_df):
 
     # Merge new_df with maxROR_info on 'roastName'
     new_df = pd.merge(new_df, maxROR_info, on='roastName', how='left')
-    new_df['peakRORTime'] = new_df['maxROR25_indexTime']/2
+    new_df['peakRORTime'] = new_df['maxROR25_indexTime'] / 60 / sampleRate  # minutes, like the other *Time columns
     new_df = new_df.reset_index(drop=True)
     #merge new_df into point_df based on roastName
     point_df = point_df.merge(new_df[['roastName', 'peakROR', 'peakRORTime']], on='roastName', how='left')
@@ -258,7 +261,7 @@ def develop_point_df(point_df, curve_df):
     point_df.loc[(point_df.firstCrackTime.isnull()) | 
         (point_df.firstCrackTime == '') |
         (point_df.firstCrackTime <= 0), 'developmentTime'] = np.nan
-    point_df.loc[(point_df.firstCrackTime > 0), 'developmentTime'] = point_df.totalRoastTime - point_df.firstCrackTime
+    point_df.loc[(point_df.firstCrackTime > 0), 'developmentTime'] = point_df.totalRoastTimeMin - point_df.firstCrackTime
 
     # Calculate RoR from Turning Point to Yellowing Point (estimated from straight point to point) *** future TBD - check against the actual mean values from curve_df
     point_df['RoR-yellowing-est'] = (165 - point_df.ibtsTurningPointTemp) / point_df.yellowingPhaseTime
@@ -272,15 +275,15 @@ def develop_point_df(point_df, curve_df):
     point_df.loc[(point_df.firstCrackTime > 0), 'RoR-browning-est'] = (point_df.firstCrackTemp - 165) / point_df.browningPhaseTime
 
 
-    # Calculate RoR from First Crack Start to First Crack End or Drop *** RoR-development-est problem, always = 1
+    # Calculate RoR from First Crack Start to Drop (IBTS degrees per minute)
     # if first crack time is true, run, else if firstCrackTime is NaN or blank set RoR-development-est to NaN
     point_df.loc[(point_df.firstCrackTime.isnull()) | 
         (point_df.firstCrackTime == '') |
         (point_df.firstCrackTime <= 0), 'RoR-development-est'] = np.nan
-    point_df.loc[(point_df.firstCrackTime > 0), 'RoR-development-est'] = (point_df.totalRoastTime - (point_df.indexFirstCrackStart)/2) / point_df.developmentTime
+    point_df.loc[(point_df.firstCrackTime > 0), 'RoR-development-est'] = (point_df.drumDropTemperature - point_df.firstCrackTemp) / point_df.developmentTime
 
     # Calculate the fullRoastROR from Turning Point to Drop Temp *** (future fix, this might be better if from Peak ROR to Drop)
-    point_df['RoR-fullRoast-est'] = (point_df.drumDropTemperature - point_df.ibtsTurningPointTemp) / (point_df.totalRoastTime - point_df.turningPointTime)
+    point_df['RoR-fullRoast-est'] = (point_df.drumDropTemperature - point_df.ibtsTurningPointTemp) / (point_df.totalRoastTimeMin - point_df.turningPointTime)
 
     print("\nCalculated:")
     print("• Weight metrics: green/roasted weights and loss %")
@@ -290,6 +293,7 @@ def develop_point_df(point_df, curve_df):
  
     print("\nAssumptions:")
     print("• Sample rate: 2Hz")
+    print("• All *Time columns in minutes (totalRoastTime stays in seconds, totalRoastTimeMin added)")
     print("• Window size for peak ROR: 20")
     print("• Peak ROR smoothed with rolling average")
     print("• Yellow point fixed at 165°C")

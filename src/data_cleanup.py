@@ -27,18 +27,43 @@ def basic_cleanup(df):
     
     #reset index
     df.reset_index(drop=True, inplace=True)
+
+    df = fix_zero_drop_temps(df)
     
     #print
     print (f'Removed unused columns from RoastTime: {other_meta}')
     
     return df
 
-def fill_derivative_values(df):
-    #fill all ibtsDerivative NAN values with 0 (usually just the first 1-2 rows, pretty negligible)
-    df['ibts2ndDerivative'] = df['ibts2ndDerivative'].fillna(0)
+def fix_zero_drop_temps(df):
+    # Some RT4 roasts (#138-#143) were saved with charge and drop temperatures of 0 and roastEndIndex=0.
+    # Read them off the recorded curves instead (charge = roastStartIndex sample, drop = last sample)
+    # so Drop-Charge delta, IBTS-BT at drop, time/temp and the RoR estimates aren't computed from 0.
+    temp_cols = ['drumChargeTemperature', 'beanChargeTemperature', 'drumDropTemperature', 'beanDropTemperature']
+    bad = ~(df[temp_cols].fillna(0) > 0).all(axis=1)
+    for i in df.index[bad]:
+        start = int(df.at[i, 'roastStartIndex']) if df.at[i, 'roastStartIndex'] > 0 else 0
+        if not df.at[i, 'drumChargeTemperature'] > 0:
+            df.at[i, 'drumChargeTemperature'] = df.at[i, 'drumTemperature'][start]
+        if not df.at[i, 'beanChargeTemperature'] > 0:
+            df.at[i, 'beanChargeTemperature'] = df.at[i, 'beanTemperature'][start]
+        if not df.at[i, 'drumDropTemperature'] > 0:
+            df.at[i, 'drumDropTemperature'] = df.at[i, 'drumTemperature'][-1]
+        if not df.at[i, 'beanDropTemperature'] > 0:
+            df.at[i, 'beanDropTemperature'] = df.at[i, 'beanTemperature'][-1]
+        if not df.at[i, 'roastEndIndex'] > 0:
+            df.at[i, 'roastEndIndex'] = len(df.at[i, 'beanTemperature']) - 1
+    if bad.any():
+        print(f"Filled zero charge/drop temperatures from the recorded curves for: {df.loc[bad, 'roastName'].tolist()}")
+    return df
 
-    #fill all ibtsDerivative values now (usually just the first row and negligible)
-    df['ibtsDerivative'] = df['ibtsDerivative'].fillna(0)
+def fill_derivative_values(df):
+    # Fill the leading NaN rows of ibtsDerivative/ibts2ndDerivative with 0 (usually just the first 1-2 rows, pretty negligible)
+    # Only for roasts that have an IBTS derivative curve. RT2 roasts (2019-2020) never recorded one, so they stay NaN
+    # instead of becoming a fake flat line of zeros.
+    has_ibts = df.groupby('roastName')['ibtsDerivative'].transform(lambda x: x.notnull().any())
+    for col in ['ibtsDerivative', 'ibts2ndDerivative']:
+        df.loc[has_ibts, col] = df.loc[has_ibts, col].fillna(0)
     return df
 
 def drop_intermediate_columns(df):
